@@ -10,6 +10,7 @@
         <div class="cta-action-buttons row">
           <q-btn label="Join Our Waitlist" rounded color="black" />
           <q-btn label="Learn More" rounded color="black" />
+          <q-btn label="Get Started (TEMPORARY)" @click="showDialog = true" rounded color="black" />
         </div>
       </div>
       <div class="cta-image-container">
@@ -50,10 +51,25 @@
       </div>
     </div>
   </q-page>
+  <RegistrationDialog v-model="showDialog" />
 </template>
 
-<script setup>
-//
+<script>
+import RegistrationDialog from '../components/RegistrationDialog.vue'
+import { ref } from 'vue'
+
+export default {
+  components: {
+    RegistrationDialog,
+  },
+  setup() {
+    const showDialog = ref(false)
+
+    return {
+      showDialog,
+    }
+  },
+}
 </script>
 <style scoped>
 .cta {
