@@ -71,10 +71,15 @@
               <q-input filled fill-input label="Company Name"></q-input>
               <q-input filled fill-input label="Company Website URL"></q-input>
               <q-input filled fill-input label="Company Email Domain" hint="@xxxxxxx.com"></q-input>
-              <q-btn label="Upload Logo" />
+              <q-btn rounded color="black" label="Upload Logo" />
               <q-input filled fill-input label="Company Name"></q-input>
               <q-checkbox> I verify that I am authorized to create this organization</q-checkbox>
-              <q-btn label="Create Organization" type="submit" />
+              <q-btn
+                rounded
+                color="black"
+                label="Submit Organization For Verification"
+                type="submit"
+              />
             </q-form>
           </div>
         </q-card-section>
