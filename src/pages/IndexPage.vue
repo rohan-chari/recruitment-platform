@@ -10,7 +10,7 @@
         <div class="cta-action-buttons row">
           <q-btn label="Join Our Waitlist" rounded color="black" />
           <q-btn label="Learn More" rounded color="black" />
-          <q-btn label="Get Started (TEMPORARY)" @click="showDialog = true" rounded color="black" />
+          <q-btn label="Get Started (TEMPORARY)" @click="handleGetStarted" rounded color="black" />
         </div>
       </div>
       <div class="cta-image-container">
@@ -56,7 +56,9 @@
 
 <script>
 import RegistrationDialog from '../components/RegistrationDialog.vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from 'src/stores/auth'
 
 export default {
   components: {
@@ -64,9 +66,22 @@ export default {
   },
   setup() {
     const showDialog = ref(false)
+    const userStore = useAuthStore()
+    const router = useRouter()
 
+    const userObject = computed(() => userStore.userObject)
+
+    const handleGetStarted = () => {
+      if (userObject.value) {
+        router.push('/home')
+      } else {
+        showDialog.value = true
+      }
+    }
     return {
       showDialog,
+      userObject,
+      handleGetStarted,
     }
   },
 }

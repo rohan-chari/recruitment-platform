@@ -189,6 +189,7 @@
 
 <script>
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useAuthStore } from 'src/stores/auth'
 
@@ -205,6 +206,7 @@ export default {
       set: (val) => emit('update:modelValue', val),
     })
 
+    const router = useRouter()
     const $q = useQuasar()
     const authStore = useAuthStore()
 
@@ -259,6 +261,7 @@ export default {
 
       try {
         await authStore.createUser(registrationEmail.value, registrationPassword.value)
+        router.push('/home')
         $q.notify({ type: 'positive', message: 'Account created successfully!' })
       } catch (err) {
         let msg = 'An unexpected error occurred.'
@@ -283,6 +286,7 @@ export default {
 
       try {
         await authStore.login(signInEmail.value, signInPassword.value)
+        router.push('/home')
         $q.notify({ type: 'positive', message: 'Signed in successfully!' })
       } catch (err) {
         let msg = 'An unexpected error occurred.'

@@ -11,6 +11,9 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
   }),
+  getters: {
+    userObject: (state) => state.user,
+  },
   actions: {
     async login(email, password) {
       const result = await signInWithEmailAndPassword(auth, email, password)
