@@ -9,17 +9,102 @@
         <q-card-section class="q-pt-none dialog-section" align="center">
           <h4>Get Started</h4>
           <p v-if="currentPage == 0" class="secondary-color">
+            Create your account to start chatting with recruiters.
+          </p>
+          <p v-if="currentPage == 1" class="secondary-color">
             Are you an organization or a candidate?
           </p>
-          <p v-if="currentPage == 1 && activeUserType == 'organization'" class="secondary-color">
+          <p v-if="currentPage == 2 && activeUserType == 'organization'" class="secondary-color">
             Let's find your organization. Type its name below.
-          </p>
-          <p v-if="currentPage == 1 && activeUserType == 'candidate'" class="secondary-color">
-            Create your account to start chatting with recruiters.
           </p>
         </q-card-section>
 
-        <q-card v-if="currentPage == 0" class="row org-cand-container q-pa-md">
+        <q-card-section v-if="currentPage == 0">
+          <!--@submit.prevent="handleCreateOrg"-->
+
+          <div v-if="registrationActive">
+            <q-form @submit.prevent="handleCreateAccount">
+              <h6 class="card-subheader">Create Account</h6>
+              <div class="row sign-in-option">
+                <p class="card-subheader secondary-color">Already have an account?</p>
+                <p
+                  class="card-subheader create-link"
+                  @click="registrationActive = !registrationActive"
+                >
+                  Sign in here.
+                </p>
+              </div>
+              <div class="create-org-form">
+                <q-input
+                  id="registrationEmail"
+                  v-model="registrationEmail"
+                  filled
+                  dense
+                  label="Email"
+                ></q-input>
+                <q-input
+                  id="registrationEmailVerify"
+                  v-model="registrationEmailVerify"
+                  filled
+                  dense
+                  fill-input
+                  label="Verify Email"
+                ></q-input>
+                <q-input
+                  id="registrationPassword"
+                  v-model="registrationPassword"
+                  filled
+                  dense
+                  fill-input
+                  label="Password"
+                ></q-input>
+                <q-input
+                  id="registrationPasswordVerify"
+                  v-model="registrationPasswordVerify"
+                  filled
+                  dense
+                  fill-input
+                  label="Verify Password"
+                ></q-input>
+                <q-btn rounded color="black" label="Create Account" type="submit" />
+              </div>
+            </q-form>
+          </div>
+          <div v-if="!registrationActive">
+            <q-form @submit.prevent="handleSignIn">
+              <h6 class="card-subheader">Create Account</h6>
+              <div class="row sign-in-option">
+                <p class="card-subheader secondary-color">Don't have an account?</p>
+                <p
+                  class="card-subheader create-link"
+                  @click="registrationActive = !registrationActive"
+                >
+                  Sign up here.
+                </p>
+              </div>
+              <div class="create-org-form">
+                <q-input
+                  id="signInEmail"
+                  v-model="signInEmail"
+                  filled
+                  dense
+                  label="Email"
+                ></q-input>
+                <q-input
+                  id="signInPassword"
+                  v-model="signInPassword"
+                  filled
+                  dense
+                  fill-input
+                  label="Password"
+                ></q-input>
+                <q-btn rounded color="black" label="Sign In" type="submit" />
+              </div>
+            </q-form>
+          </div>
+        </q-card-section>
+
+        <q-card v-if="currentPage == 1" class="row org-cand-container q-pa-md">
           <q-card-section
             :class="{
               'icon-container': true,
@@ -41,7 +126,7 @@
             <p class="text-body2">Organization</p>
           </q-card-section>
         </q-card>
-        <q-card-section v-if="currentPage == 1 && activeUserType == 'organization'">
+        <q-card-section v-if="currentPage == 2 && activeUserType == 'organization'">
           <q-select
             filled
             :model-value="orgSearch"
@@ -83,7 +168,7 @@
             </q-form>
           </div>
         </q-card-section>
-        <q-card-section v-if="currentPage == 1 && activeUserType == 'candidate'">
+        <q-card-section v-if="currentPage == 2 && activeUserType == 'candidate'">
           Candidate selected.
         </q-card-section>
         <q-card-section class="next-btn-container row">
@@ -95,14 +180,7 @@
             icon="arrow_back_ios"
             @click="changePage('prev')"
           />
-          <q-btn
-            class="next-btn"
-            :disable="!activeUserType"
-            flat
-            round
-            icon="arrow_forward_ios"
-            @click="changePage('next')"
-          />
+          <q-btn class="next-btn" flat round icon="arrow_forward_ios" @click="changePage('next')" />
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -111,6 +189,8 @@
 
 <script>
 import { computed, ref } from 'vue'
+import { useQuasar } from 'quasar'
+import { useAuthStore } from 'src/stores/auth'
 
 export default {
   props: {
@@ -124,6 +204,18 @@ export default {
       get: () => props.modelValue,
       set: (val) => emit('update:modelValue', val),
     })
+
+    const $q = useQuasar()
+    const authStore = useAuthStore()
+
+    const registrationActive = ref(true)
+    const registrationEmail = ref(null)
+    const registrationEmailVerify = ref(null)
+    const registrationPassword = ref(null)
+    const registrationPasswordVerify = ref(null)
+
+    const signInEmail = ref(null)
+    const signInPassword = ref(null)
 
     const activeUserType = ref('')
     const createOrgActive = ref(false)
@@ -156,6 +248,65 @@ export default {
       'United States Department of Agriculture',
     ]
 
+    const handleCreateAccount = async () => {
+      if (
+        registrationEmail.value !== registrationEmailVerify.value ||
+        registrationPassword.value !== registrationPasswordVerify.value
+      ) {
+        $q.notify({ type: 'negative', message: 'Emails or passwords do not match.' })
+        return
+      }
+
+      try {
+        await authStore.createUser(registrationEmail.value, registrationPassword.value)
+        $q.notify({ type: 'positive', message: 'Account created successfully!' })
+      } catch (err) {
+        let msg = 'An unexpected error occurred.'
+        if (err.code === 'auth/email-already-in-use') {
+          msg = 'Email already exists.'
+        } else if (err.code === 'auth/invalid-email') {
+          msg = 'Invalid email format.'
+        } else if (err.code === 'auth/weak-password') {
+          msg = 'Password should be at least 6 characters.'
+        }
+        $q.notify({ type: 'negative', message: msg })
+      }
+    }
+    const handleSignIn = async () => {
+      if (!signInEmail.value || !signInPassword.value) {
+        $q.notify({
+          type: 'negative',
+          message: 'Please ensure both the email and password fields are filled out',
+        })
+        return
+      }
+
+      try {
+        await authStore.login(signInEmail.value, signInPassword.value)
+        $q.notify({ type: 'positive', message: 'Signed in successfully!' })
+      } catch (err) {
+        let msg = 'An unexpected error occurred.'
+        switch (err.code) {
+          case 'auth/user-not-found':
+            msg = 'No account found with this email.'
+            break
+          case 'auth/wrong-password':
+            msg = 'Incorrect password.'
+            break
+          case 'auth/invalid-email':
+            msg = 'Invalid email format.'
+            break
+          case 'auth/too-many-requests':
+            msg = 'Too many failed attempts. Please try again later.'
+            break
+          case 'auth/network-request-failed':
+            msg = 'Network error. Check your internet connection.'
+            break
+        }
+        $q.notify({ type: 'negative', message: msg })
+      }
+    }
+
     const orgSearch = ref(null)
     const options = ref(stringOptions)
 
@@ -173,12 +324,20 @@ export default {
           options.value = stringOptions.filter((v) => v.toLocaleLowerCase().indexOf(needle) > -1)
         })
       },
-
       setOrgSearch(val) {
         orgSearch.value = val
       },
       expandCreateOrg,
       createOrgActive,
+      registrationEmail,
+      registrationEmailVerify,
+      registrationPassword,
+      registrationPasswordVerify,
+      handleCreateAccount,
+      registrationActive,
+      signInEmail,
+      signInPassword,
+      handleSignIn,
     }
   },
 }
@@ -243,18 +402,6 @@ export default {
   justify-content: center;
   font-size: 0.8rem;
 
-  .create-link {
-    color: #007aff;
-    text-decoration: underline;
-    cursor: pointer;
-    font-weight: 500;
-    transition: color 0.2s ease;
-
-    &:hover {
-      color: #005bbb;
-    }
-  }
-
   .secondary-color {
     color: #666;
     margin-right: 0.25rem;
@@ -267,5 +414,21 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.create-link {
+  color: #007aff;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #005bbb;
+  }
+}
+.sign-in-option {
+  display: flex;
+  gap: 0.2rem;
 }
 </style>
