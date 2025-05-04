@@ -17,8 +17,13 @@ body {
 .card-subheader {
   margin: 0;
 }
-.primary-green-container {
-  background-color: #ffbbe0;
+.primary-pink-container {
+  background-color: #ffe6f4;
+  min-height: auto !important;
+}
+.secondary-gray-container {
+  background-color: rgb(243, 243, 243);
+  min-height: auto !important;
 }
 .alert-icon {
   font-size: 2.5rem;
@@ -40,4 +45,13 @@ body {
 .error-message {
   color: red;
   font-size: 0.75rem;
+}
+.align-center {
+  align-items: center;
+}
+.justify-center {
+  justify-content: center;
+}
+.no-margin {
+  margin: 0;
 }

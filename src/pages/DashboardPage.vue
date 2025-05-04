@@ -68,7 +68,7 @@ export default {
 }
 </script>
 <style scoped>
-.primary-green-container {
+.primary-pink-container {
   width: 100%;
   height: fit-content;
   padding: 1.5rem;

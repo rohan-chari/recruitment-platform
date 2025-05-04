@@ -18,7 +18,7 @@
             your value — and keep your vouches ready for every opportunity.
           </h5>
         </div>
-        <div class="cta-action-buttons row">
+        <div class="cta-action-buttons row q-mb-md">
           <q-btn
             label="Join Our Waitlist"
             size="2rem"
@@ -46,29 +46,33 @@
       </div>
     </div>
   </q-page>
-  <q-page class="flex learn-more-page">
+  <q-page class="flex secondary-gray-container">
     <div class="learn-more-container">
-      <div class="learn-more">
-        <h3>Find your next job...</h3>
-        <div class="row learn-more-row">
-          <div class="learn-more-column column">
-            <q-icon class="learn-more-icon" name="upload_file" />
-            <h5>Put your best foot forward.</h5>
-            <p>
-              Upload your resume to get instantly matched with companies looking for your skills.
-            </p>
+      <div class="row">
+        <div class="col-sm-12 col-md-7 q-pl-xl">
+          <div class="row">
+            <h2>Tired of chasing recommendations?</h2>
           </div>
-          <div class="learn-more-column column">
-            <q-icon class="learn-more-icon" name="chat" />
-            <h5>Start the conversation.</h5>
-            <p>
-              Message recruiters and real team members to learn more about roles, culture, and fit.
-            </p>
+          <div class="row">
+            <h4 class="secondary-color">
+              Whether you're applying for jobs, grad school, internships, or housing- you're
+              constantly asked for references. VouchForMe makes it easy to collect, store, and share
+              them anytime.
+            </h4>
           </div>
-          <div class="learn-more-column column">
-            <q-icon class="learn-more-icon" name="celebration" />
-            <h5>You're in.</h5>
-            <p>Land the job, celebrate the win, and share your success.</p>
+        </div>
+        <div class="col-sm-12 col-md-4 learn-more-questions">
+          <div class="row learn-more-question-row">
+            <q-icon name="mail" size="2.5rem" />
+            <h4>Lost in inbox threads?</h4>
+          </div>
+          <div class="row learn-more-question-row">
+            <q-icon name="timer" size="2.5rem" />
+            <h4>Takes too much time?</h4>
+          </div>
+          <div class="row learn-more-question-row">
+            <q-icon name="groups" size="2.5rem" />
+            <h4>Not sure who to ask?</h4>
           </div>
         </div>
       </div>
@@ -107,6 +111,46 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+  </q-page>
+  <q-page class="primary-pink-container q-pb-lg">
+    <div class="learn-more-container">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 q-pl-xl">
+          <div class="row">
+            <h2>Built for trust. Designed for ease.</h2>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="row justify-center align-center">
+                <q-icon name="hail" size="2.5rem" />
+                <h4>Request</h4>
+              </div>
+              <div class="row justify-center">
+                <h5 class="secondary-color no-margin">Invite someone to vouch for you.</h5>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="row align-center justify-center">
+                <q-icon name="folder_special" size="2.5rem" />
+                <h4>Organize</h4>
+              </div>
+              <div class="row justify-center">
+                <h5 class="secondary-color no-margin">Invite someone to vouch for you.</h5>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="row align-center justify-center">
+                <q-icon name="cloud_upload" size="2.5rem" />
+                <h4>Share</h4>
+              </div>
+              <div class="row justify-center">
+                <h5 class="secondary-color no-margin">Invite someone to vouch for you.</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </q-page>
   <RegistrationDialog v-model="showDialog" />
 </template>
@@ -216,28 +260,7 @@ export default {
 .index-page {
   background-color: #ffe6f4;
 }
-.learn-more-page {
-  justify-content: center;
-}
-.learn-more-icon {
-  font-size: 7rem;
-}
-.learn-more-row {
-  gap: 10rem;
-}
-.learn-more-column {
-  align-items: center;
-  width: 20rem;
-  h5 {
-    margin-top: 0;
-    margin-bottom: 1rem;
-  }
-}
-.learn-more {
-  h3 {
-    text-align: center;
-  }
-}
+
 .email-waitlist-container {
   width: 100%;
 }
@@ -245,5 +268,19 @@ export default {
   width: 100%;
   display: flex;
   justify-content: space-around;
+}
+.learn-more-container {
+  margin-left: auto;
+  margin-right: auto;
+}
+.learn-more-questions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.learn-more-question-row {
+  gap: 1rem;
+  align-items: center;
 }
 </style>
