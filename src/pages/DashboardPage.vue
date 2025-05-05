@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div class="primary-green-container">
+    <div class="primary-background-color">
       <div class="row items-center justify-between q-mb-md">
         <h5 class="q-ma-none">Welcome back, {{ userObject.email }}</h5>
         <q-btn flat icon="logout" @click="handleLogout" />
@@ -68,7 +68,7 @@ export default {
 }
 </script>
 <style scoped>
-.primary-pink-container {
+.primary-background-color {
   width: 100%;
   height: fit-content;
   padding: 1.5rem;
