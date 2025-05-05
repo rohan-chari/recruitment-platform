@@ -47,7 +47,7 @@
           alt="Text with recruiter"
           class="cta-image"
           src="~assets/cta-image.png"
-          style="width: 400px; height: 600px"
+          style="width: 100%; height: auto"
         />
       </div>
     </div>
@@ -351,6 +351,8 @@ export default {
   border-radius: 25px;
 }
 .cta-container-full {
+  flex-direction: row;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 7.5rem;
 }
@@ -395,5 +397,45 @@ export default {
 .cta-caption {
   text-align: center;
   width: 75rem;
+}
+
+@media (max-width: 768px) {
+  .cta-container-full {
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    text-align: center;
+  }
+
+  .cta-caption {
+    width: 90%;
+    text-align: center;
+  }
+
+  .cta-image {
+    width: 100%;
+    height: auto;
+  }
+
+  .join-waitlist-form {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .join-waitlist-form .q-input,
+  .join-waitlist-form .q-btn {
+    width: 90%;
+  }
+
+  .use-cases-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .use-cases-card {
+    width: 90%;
+    margin-bottom: 1rem;
+  }
 }
 </style>
