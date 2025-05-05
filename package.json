@@ -1,8 +1,8 @@
 {
   "name": "recruiter-chat-frontend",
   "version": "0.0.1",
-  "description": "A Quasar Project",
-  "productName": "Quasar App",
+  "description": "Stop scrambling for recommendations. Create a profile backed by real people who know your value — and keep your vouches ready for every opportunity.",
+  "productName": "VouchForMe",
   "author": "Rohan Chari <rohan.rchari@gmail.com>",
   "type": "module",
   "private": true,

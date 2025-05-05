@@ -152,6 +152,94 @@
       </div>
     </div>
   </q-page>
+  <q-page class="secondary-gray-container q-pb-lg">
+    <div class="learn-more-container">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 q-pl-xl">
+          <div class="row">
+            <h2>One tool. Endless use cases.</h2>
+          </div>
+          <div class="row use-cases-container">
+            <q-card class="col-sm-12 col-md-5 use-cases-card">
+              <q-card-section>
+                <q-icon name="school" size="3.5rem" />
+              </q-card-section>
+              <q-card-section>
+                <h4 class="no-margin">Students & Grads</h4>
+              </q-card-section>
+              <q-card-section>
+                <h5 class="secondary-color no-margin">College apps, internships, scholarships</h5>
+              </q-card-section>
+            </q-card>
+            <q-card class="col-sm-12 col-md-5 use-cases-card">
+              <q-card-section>
+                <q-icon name="business_center" size="3.5rem" />
+              </q-card-section>
+              <q-card-section>
+                <h4 class="no-margin">Professionals</h4>
+              </q-card-section>
+              <q-card-section>
+                <h5 class="secondary-color no-margin">Job changes, career pivots</h5>
+              </q-card-section>
+            </q-card>
+            <q-card class="col-sm-12 col-md-5 use-cases-card">
+              <q-card-section>
+                <q-icon name="construction" size="3.5rem" />
+              </q-card-section>
+              <q-card-section>
+                <h4 class="no-margin">Freelancers</h4>
+              </q-card-section>
+              <q-card-section>
+                <h5 class="secondary-color no-margin">Show client testimonials</h5>
+              </q-card-section>
+            </q-card>
+            <q-card class="col-sm-12 col-md-5 use-cases-card">
+              <q-card-section>
+                <q-icon name="home" size="3.5rem" />
+              </q-card-section>
+              <q-card-section>
+                <h4 class="no-margin">Renters</h4>
+              </q-card-section>
+              <q-card-section>
+                <h5 class="secondary-color no-margin">Secure housing with trusted references</h5>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </q-page>
+  <q-page class="primary-pink-container q-pb-lg">
+    <div class="learn-more-container">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 q-pl-xl">
+          <div class="row">
+            <h2>Real Voices. Real Impact.</h2>
+          </div>
+          <div class="row">
+            <h5 class="no-margin">
+              "Nathan was a rockstar on our USDA contract. He performed a lot of data analysis to
+              help our country's farmers."
+            </h5>
+          </div>
+          <div class="row">
+            <h6 class="secondary-color">--Arash, Senior Consultant at Booz Allen</h6>
+          </div>
+        </div>
+      </div>
+    </div>
+  </q-page>
+  <q-page class="secondary-gray-container q-pb-lg">
+    <div class="learn-more-container">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 q-pl-xl">
+          <div class="row">
+            <h2>Start building your reference vault today.</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  </q-page>
   <RegistrationDialog v-model="showDialog" />
 </template>
 
@@ -203,7 +291,7 @@ export default {
       }
 
       try {
-        await axios.post('http://localhost:5000/api/waitlist', {
+        await axios.post('https://vouchforme.org/api/waitlist', {
           email: waitlistEmail.value,
         })
 
@@ -282,5 +370,16 @@ export default {
 .learn-more-question-row {
   gap: 1rem;
   align-items: center;
+}
+.use-cases-card {
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.use-cases-container {
+  gap: 2rem;
+  justify-content: space-around;
 }
 </style>
