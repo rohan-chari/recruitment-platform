@@ -2,7 +2,7 @@
   <q-page>
     <div class="primary-background-color">
       <div class="row items-center justify-between q-mb-md">
-        <h5 class="q-ma-none">Welcome back, {{ userObject.email }}</h5>
+        <h2 class="q-ma-none primary-color">Welcome back, {{ userObject?.email }}</h2>
         <q-btn flat icon="logout" @click="handleLogout" />
       </div>
       <q-card class="complete-setup-card">
@@ -11,47 +11,33 @@
             <q-icon class="q-mr-md alert-icon" name="error" />
             <div class="col-7">
               <div class="text-weight-medium">Complete your account setup</div>
-              <div class="text-caption text-grey-7">Set up your account to start using [Name]</div>
+              <div class="text-caption text-grey-7">
+                Set up your account to start using VouchForMe
+              </div>
             </div>
             <div class="col-4 row justify-end">
-              <q-btn label="Complete Setup" rounded color="black" />
+              <q-btn label="Complete Setup" @click="showSetupDialog = true" rounded color="black" />
             </div>
           </div>
         </q-card-section>
       </q-card>
     </div>
-    <div class="dashboard-content row items-start justify-around q-mt-lg">
-      <q-card class="q-col-xs-12 q-col-sm-6 q-col-md-3 dashboard-tile">
-        <q-card-section>
-          <h6>Overview</h6>
-          <q-separator />
-        </q-card-section>
-      </q-card>
-      <q-card class="q-col-xs-12 q-col-sm-6 q-col-md-3 dashboard-tile">
-        <q-card-section>
-          <h6>Active Conversations</h6>
-          <q-separator />
-        </q-card-section>
-      </q-card>
-      <q-card class="q-col-xs-12 q-col-sm-6 q-col-md-3 dashboard-tile">
-        <q-card-section>
-          <h6>Announcements</h6>
-          <q-separator />
-        </q-card-section>
-      </q-card>
-    </div>
   </q-page>
+  <SetupDialog v-model="showSetupDialog" />
 </template>
 <script>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from 'src/stores/auth'
+import SetupDialog from 'src/components/SetupDialog.vue'
 
 export default {
-  components: {},
+  components: { SetupDialog },
   setup() {
     const userStore = useAuthStore()
     const router = useRouter()
+
+    const showSetupDialog = ref(false)
 
     const userObject = computed(() => userStore.userObject)
 
@@ -63,6 +49,7 @@ export default {
     return {
       userObject,
       handleLogout,
+      showSetupDialog,
     }
   },
 }

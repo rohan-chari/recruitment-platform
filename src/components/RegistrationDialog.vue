@@ -1,14 +1,14 @@
 <template>
   <div class="q-pa-md q-gutter-sm">
     <q-dialog v-model="dialogModel">
-      <q-card class="component-container">
+      <q-card class="dialog-container">
         <q-card-section align="right">
           <q-icon flat name="close" class="close-btn" @click="dialogModel = false" />
         </q-card-section>
 
         <q-card-section class="q-pt-none dialog-section" align="center">
           <h4>Get Started</h4>
-          <p class="secondary-color">Create your account to start chatting with recruiters.</p>
+          <h6 class="secondary-color">Create your account to start chatting with recruiters.</h6>
         </q-card-section>
 
         <q-card-section>
@@ -44,6 +44,7 @@
                   id="registrationPassword"
                   v-model="registrationPassword"
                   filled
+                  type="password"
                   dense
                   fill-input
                   label="Password"
@@ -52,6 +53,7 @@
                   id="registrationPasswordVerify"
                   v-model="registrationPasswordVerify"
                   filled
+                  type="password"
                   dense
                   fill-input
                   label="Verify Password"
@@ -85,6 +87,7 @@
                   v-model="signInPassword"
                   filled
                   dense
+                  type="password"
                   fill-input
                   label="Password"
                 ></q-input>
@@ -249,9 +252,6 @@ export default {
   transform: scale(1.15);
   transition: all 0.2s ease;
   color: white;
-}
-.component-container {
-  width: 100%;
 }
 .org-missing-text {
   margin-top: 0.25rem;
