@@ -320,6 +320,7 @@ export default {
 
         emailWaitlistWindow.value = false
         waitlistEmail.value = ''
+        getWaitlistCount()
       } catch (error) {
         if (error.response?.status === 409) {
           waitListEmailExistsError.value = true
