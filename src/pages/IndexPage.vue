@@ -18,7 +18,7 @@
             your references in one place—so you're always ready to prove your credibility.
           </h6>
         </div>
-        <div class="cta-action-buttons row q-my-lg">
+        <div class="cta-action-buttons row q-mt-lg">
           <q-btn
             label="Join Our Waitlist"
             size="1.3rem"
@@ -42,6 +42,9 @@
             rounded
             class="btn-primary"
           />
+        </div>
+        <div v-if="waitlistCount > 0" class="row q-ml-sm">
+          <p class="no-margin secondary-color">{{ waitlistCount }} members are in. Join now!</p>
         </div>
       </div>
       <div>
@@ -256,7 +259,7 @@
 
 <script>
 import RegistrationDialog from '../components/RegistrationDialog.vue'
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from 'src/stores/auth'
 import { useQuasar } from 'quasar'
@@ -279,6 +282,7 @@ export default {
     const waitListEmailExistsError = ref(false)
 
     const emailWaitlistWindow = ref(false)
+    const waitlistCount = ref(null)
 
     const handleGetStarted = () => {
       if (userObject.value) {
@@ -290,6 +294,12 @@ export default {
 
     const handleJoinWaitlist = () => {
       emailWaitlistWindow.value = true
+    }
+
+    const getWaitlistCount = async () => {
+      let response = await axios.get('https://vouchforme.org/api/waitlist')
+
+      waitlistCount.value = response.data.waitlistCount
     }
 
     const addUserToWaitList = async () => {
@@ -323,6 +333,10 @@ export default {
       document.getElementById('learnMoreSection').scrollIntoView({ behavior: 'smooth' })
     }
 
+    onMounted(() => {
+      getWaitlistCount()
+    })
+
     return {
       showDialog,
       userObject,
@@ -334,6 +348,7 @@ export default {
       emptyEmailError,
       waitListEmailExistsError,
       goToLearnMoreSection,
+      waitlistCount,
     }
   },
 }
