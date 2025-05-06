@@ -3,29 +3,25 @@
     <div class="cta-container-full row">
       <div class="cta">
         <div class="row">
-          <div class="col-12 primary-color">
-            <h1 class="no-margin">People know you're great. Show it.</h1>
+          <div class="col-12 primary-color row">
+            <h2 class="no-margin">People know you're great.</h2>
           </div>
         </div>
-        <div class="row q-mb-sm">
-          <div class="col-12">
-            <h4 class="no-margin primary-color">
-              Collect, organize, and share your testimonials all in one place.
-            </h4>
+        <div class="row">
+          <div class="col-12 primary-color row q-mb-md">
+            <h2 class="no-margin">Show it.</h2>
           </div>
         </div>
         <div class="row q-my-lg">
           <h6 class="no-margin cta-caption secondary-color">
-            Whether you're applying for a new job, submitting a grad school application, or securing
-            housing, VouchForMe makes it easy to collect, organize, and access your personal
-            references all in one place—so you’re always ready to showcase your credibility and
-            character when it matters most.
+            Applying for a job, grad school, or housing? VouchForMe helps you collect and access
+            your references in one place—so you're always ready to prove your credibility.
           </h6>
         </div>
-        <div class="cta-action-buttons row q-mb-md">
+        <div class="cta-action-buttons row q-my-lg">
           <q-btn
             label="Join Our Waitlist"
-            size="2rem"
+            size="1.3rem"
             @click="handleJoinWaitlist"
             rounded
             class="btn-primary"
@@ -39,16 +35,17 @@
             color="black"
           />
           -->
-          <q-btn label="Learn More" size="2rem" rounded class="btn-primary" />
+          <q-btn
+            label="Learn More"
+            size="1.3rem"
+            @click="goToLearnMoreSection"
+            rounded
+            class="btn-primary"
+          />
         </div>
       </div>
-      <div class="cta-image-container">
-        <img
-          alt="Text with recruiter"
-          class="cta-image"
-          src="~assets/cta-image.png"
-          style="width: 100%; height: auto"
-        />
+      <div>
+        <img alt="Text with recruiter" class="cta-image" src="~assets/cta-image.png" width="400" />
       </div>
     </div>
   </q-page>
@@ -56,7 +53,7 @@
   <q-page class="secondary-gray-container q-pb-lg">
     <div class="learn-more-container">
       <div class="row">
-        <div class="col-sm-12 col-md-12 q-pl-xl">
+        <div id="learnMoreSection" class="col-sm-12 col-md-12 q-pl-xl">
           <div class="row">
             <h2 class="primary-color">How it works</h2>
           </div>
@@ -226,10 +223,10 @@
         <q-icon flat name="close" class="close-btn" @click="emailWaitlistWindow = false" />
       </q-card-section>
       <q-card-section class="q-pt-none dialog-section" align="center">
-        <h4>Join our waitlist.</h4>
-        <p class="secondary-color">
-          Enter your email below and get notified as soon as we go live!
-        </p>
+        <h2 class="primary-color no-margin">Join our waitlist.</h2>
+        <h6 class="secondary-color no-margin">
+          Enter your email and get notified as soon as we go live!
+        </h6>
       </q-card-section>
       <q-card-section>
         <q-form @submit.prevent="addUserToWaitList">
@@ -238,17 +235,17 @@
               class="col-8"
               id="waitlistEmail"
               v-model="waitlistEmail"
-              filled
-              dense
+              rounded
+              outlined
               label="Email"
             ></q-input>
-            <q-btn rounded color="black" label="Join Waitlist" type="submit" />
+            <q-btn rounded color="black" label="Join Waitlist" size="1.1rem" type="submit" />
           </div>
           <div v-if="emptyEmailError" class="row q-pl-md error-message">
-            <p>Please enter a valid email.</p>
+            <h6 class="no-margin">Please enter a valid email.</h6>
           </div>
           <div v-if="waitListEmailExistsError" class="row q-pl-md error-message">
-            <p>This email is already on the waitlist.</p>
+            <h6 class="no-margin">This email is already on the waitlist.</h6>
           </div>
         </q-form>
       </q-card-section>
@@ -322,6 +319,10 @@ export default {
       }
     }
 
+    const goToLearnMoreSection = () => {
+      document.getElementById('learnMoreSection').scrollIntoView({ behavior: 'smooth' })
+    }
+
     return {
       showDialog,
       userObject,
@@ -332,6 +333,7 @@ export default {
       addUserToWaitList,
       emptyEmailError,
       waitListEmailExistsError,
+      goToLearnMoreSection,
     }
   },
 }
@@ -341,8 +343,6 @@ export default {
   margin-top: 6rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 100%;
   p {
     font-size: 1rem;
   }
@@ -354,7 +354,7 @@ export default {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 7.5rem;
+  width: 100%;
 }
 
 .cta-action-buttons {
@@ -395,8 +395,7 @@ export default {
   justify-content: space-around;
 }
 .cta-caption {
-  text-align: center;
-  width: 75rem;
+  width: 50rem;
 }
 
 @media (max-width: 768px) {
@@ -409,7 +408,6 @@ export default {
 
   .cta-caption {
     width: 90%;
-    text-align: center;
   }
 
   .cta-image {
