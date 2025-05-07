@@ -106,6 +106,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useAuthStore } from 'src/stores/auth'
+import axios from 'axios'
 
 export default {
   props: {
@@ -130,6 +131,8 @@ export default {
     const registrationPassword = ref(null)
     const registrationPasswordVerify = ref(null)
 
+    const userObject = computed(() => authStore.userObject)
+
     const signInEmail = ref(null)
     const signInPassword = ref(null)
 
@@ -144,6 +147,7 @@ export default {
 
       try {
         await authStore.createUser(registrationEmail.value, registrationPassword.value)
+        await addUserToDb()
         router.push('/home')
         $q.notify({ type: 'positive', message: 'Account created successfully!' })
       } catch (err) {
@@ -192,6 +196,13 @@ export default {
         }
         $q.notify({ type: 'negative', message: msg })
       }
+    }
+
+    const addUserToDb = async () => {
+      await axios.post('https://vouchforme.org/api/user/create-user', {
+        uid: userObject.value.uid,
+        email: userObject.value.email,
+      })
     }
 
     return {

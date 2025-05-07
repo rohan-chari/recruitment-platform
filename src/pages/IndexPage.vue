@@ -336,6 +336,7 @@ export default {
 
     onMounted(() => {
       getWaitlistCount()
+      console.log(userObject.value)
     })
 
     return {

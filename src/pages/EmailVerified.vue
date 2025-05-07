@@ -50,9 +50,9 @@ export default {
       }
 
       try {
-        await axios.get(`http://localhost:5000/api/registration/verify-email?token=${token}`)
+        await axios.get(`https://vouchforme.org/api/registration/verify-email?token=${token}`)
         status.value = 'Email verified! Redirecting...'
-        setTimeout(() => router.push('/dashboard'), 2000)
+        setTimeout(() => router.push('/home'), 3000)
       } catch {
         status.value = 'Verification failed. The token may be invalid or expired.'
       }
