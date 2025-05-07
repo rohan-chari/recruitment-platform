@@ -9,7 +9,7 @@
         <q-card-section class="q-pa-sm dialog-section" align="center">
           <h2 class="primary-color no-margin">Account Setup</h2>
           <h6 class="secondary-color no-margin">
-            Let's get started by veryifying your email address.
+            Let's get started by verifying your email address.
           </h6>
         </q-card-section>
 
