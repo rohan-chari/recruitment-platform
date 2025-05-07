@@ -62,7 +62,7 @@ export default {
     const userObject = computed(() => userStore.userObject)
 
     const handleSendVerificationEmail = async () => {
-      await axios.post('/api/registration/send-verification-email', {
+      await axios.post('https://vouchforme.org/api/registration/send-verification-email', {
         uid: userObject.value.uid,
         email: userObject.value.email,
       })

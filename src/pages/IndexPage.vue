@@ -26,15 +26,14 @@
             rounded
             class="btn-primary"
           />
-          <!--
-                    <q-btn
+
+          <q-btn
             label="Get Started (TEMPORARY)"
             size="1rem"
             @click="handleGetStarted"
             rounded
             color="black"
           />
-          -->
 
           <q-btn
             label="Learn More"

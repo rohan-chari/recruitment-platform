@@ -9,6 +9,11 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/DashboardPage.vue') }],
   },
+  {
+    path: '/verify-email',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/EmailVerified.vue') }],
+  },
 
   // Always leave this as last one,
   // but you can also remove it
