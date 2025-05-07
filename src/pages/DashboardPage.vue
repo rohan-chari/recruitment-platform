@@ -16,7 +16,7 @@
               </div>
             </div>
             <div class="col-4 row justify-end">
-              <q-btn label="Complete Setup" @click="showSetupDialog = true" rounded color="black" />
+              <q-btn label="Complete Setup" @click="openSetupDialog" rounded color="black" />
             </div>
           </div>
         </q-card-section>
@@ -46,10 +46,16 @@ export default {
       router.push('/')
     }
 
+    const openSetupDialog = () => {
+      showSetupDialog.value = true
+      userStore.fetchUserFromDb()
+    }
+
     return {
       userObject,
       handleLogout,
       showSetupDialog,
+      openSetupDialog,
     }
   },
 }

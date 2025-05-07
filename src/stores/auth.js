@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { auth } from '../firebase'
+import axios from 'axios'
 import {
   signInWithEmailAndPassword,
   signOut,
@@ -10,9 +11,11 @@ import {
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
+    dbUser: null,
   }),
   getters: {
     userObject: (state) => state.user,
+    userDbObject: (state) => state.dbUser,
   },
   actions: {
     async login(email, password) {
@@ -30,6 +33,17 @@ export const useAuthStore = defineStore('auth', {
       onAuthStateChanged(auth, (user) => {
         this.user = user ?? null
       })
+    },
+    async fetchUserFromDb() {
+      if (!this.dbUser) {
+        const response = await axios.get(`https://vouchforme.org/api/user/get-user`, {
+          params: {
+            uid: this.user.uid,
+            email: this.user.email,
+          },
+        })
+        this.dbUser = response.data
+      }
     },
   },
 })

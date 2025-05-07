@@ -5,57 +5,69 @@
         <q-card-section align="right">
           <q-icon flat name="close" class="close-btn" @click="setupDialogModel = false" />
         </q-card-section>
-
-        <q-card-section class="q-pa-sm dialog-section" align="center">
-          <h2 class="primary-color no-margin">Account Setup</h2>
-          <h6 class="secondary-color no-margin">
-            Let's get started by verifying your email address.
-          </h6>
-        </q-card-section>
-
-        <q-card-section class="q-pa-sm dialog-section" align="center">
-          <h6 class="primary-color no-margin">We’ll send a verification link to:</h6>
-          <div class="row justify-center q-my-md verify-email-row">
-            <q-input
-              class="disabled-email-input"
-              v-model="userObject.email"
-              disable
-              outlined
-              rounded
-            ></q-input>
-            <q-btn
-              label="Send Email"
-              size="1.1rem"
-              @click="handleSendVerificationEmail"
-              rounded
-              class="btn-primary"
-            />
+        <div class="row">
+          <div class="col-12 col-md-4 text-center">
+            <h1>hi</h1>
           </div>
-        </q-card-section>
-        <q-card-section
-          v-if="displayVerificationCode"
-          class="q-pa-sm dialog-section q-mb-md"
-          align="center"
-        >
-          <div class="row justify-center q-my-md q-gutter-sm">
-            <q-input
-              v-for="(digit, index) in code"
-              :key="index"
-              v-model="code[index]"
-              maxlength="1"
-              type="text"
-              class="verification-box"
-              outlined
-              input-class="text-center"
-              @keydown="handleKeyDown($event, index)"
-              @keyup="handleKeyUp(index)"
-              :ref="(el) => (codeInputs[index] = el)"
-              @paste="handlePaste"
-            />
+          <div class="col-12 col-md-8 q-pa-md">
+            <q-card-section class="q-pa-sm dialog-section" align="center">
+              <h2 class="primary-color no-margin">Account Setup</h2>
+              <h6 class="secondary-color no-margin">
+                Let's get started by verifying your email address.
+              </h6>
+            </q-card-section>
+
+            <q-card-section class="q-pa-sm dialog-section" align="center">
+              <h6 class="primary-color no-margin">We’ll send a verification link to:</h6>
+              <div class="row justify-center q-my-md verify-email-row">
+                <q-input
+                  class="disabled-email-input"
+                  v-model="userObject.email"
+                  disable
+                  outlined
+                  rounded
+                ></q-input>
+                <q-btn
+                  label="Send Email"
+                  size="1.1rem"
+                  @click="handleSendVerificationEmail"
+                  :disable="userDbObject?.emailVerified"
+                  rounded
+                  class="btn-primary"
+                />
+              </div>
+              <q-card-section align="center">
+                <div class="row justify-center">
+                  <h6 class="secondary-color no-margin">Email verified!</h6>
+                </div>
+              </q-card-section>
+            </q-card-section>
+            <q-card-section
+              v-if="displayVerificationCode"
+              class="q-pa-sm dialog-section q-mb-md"
+              align="center"
+            >
+              <div class="row justify-center q-my-md q-gutter-sm">
+                <q-input
+                  v-for="(digit, index) in code"
+                  :key="index"
+                  v-model="code[index]"
+                  maxlength="1"
+                  type="text"
+                  class="verification-box"
+                  outlined
+                  input-class="text-center"
+                  @keydown="handleKeyDown($event, index)"
+                  @keyup="handleKeyUp(index)"
+                  :ref="(el) => (codeInputs[index] = el)"
+                  @paste="handlePaste"
+                />
+              </div>
+              <q-btn v-if="isCodeComplete" class="btn-primary" label="verify" @click="verifyCode" />
+              {{ verificationStatus }}
+            </q-card-section>
           </div>
-          <q-btn v-if="isCodeComplete" class="btn-primary" label="verify" @click="verifyCode" />
-          {{ verificationStatus }}
-        </q-card-section>
+        </div>
       </q-card>
     </q-dialog>
   </div>
@@ -86,6 +98,7 @@ export default {
     const userStore = useAuthStore()
 
     const userObject = computed(() => userStore.userObject)
+    const userDbObject = computed(() => userStore.userDbObject)
 
     const isCodeComplete = computed(() => code.value.every((char) => char.length === 1))
 
@@ -161,6 +174,7 @@ export default {
       isCodeComplete,
       verifyCode,
       verificationStatus,
+      userDbObject,
     }
   },
 }
@@ -177,5 +191,15 @@ export default {
   height: 48px;
   font-size: 24px;
   border-radius: 8px;
+}
+.dialog-container {
+  width: 100%;
+  max-width: 900px;
+}
+
+@media (min-width: 600px) {
+  .dialog-container {
+    min-height: 400px;
+  }
 }
 </style>
