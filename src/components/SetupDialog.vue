@@ -90,7 +90,7 @@ export default {
     const isCodeComplete = computed(() => code.value.every((char) => char.length === 1))
 
     const handleSendVerificationEmail = async () => {
-      await axios.post('http://localhost:5000/api/registration/send-verification-email', {
+      await axios.post('https://vouchforme.org/api/registration/send-verification-email', {
         uid: userObject.value.uid,
         email: userObject.value.email,
       })
@@ -137,7 +137,7 @@ export default {
     const verifyCode = async () => {
       const token = code.value.join('')
       const response = await axios.get(
-        `http://localhost:5000/api/registration/verify-email?token=${token}`,
+        `https://vouchforme.org/api/registration/verify-email?token=${token}`,
       )
 
       if (response.data.emailVerified) {
