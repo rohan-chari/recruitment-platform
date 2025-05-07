@@ -10,8 +10,8 @@
       </q-card-section>
 
       <q-card-section class="q-mt-md text-center">
-        <q-spinner-dots size="40px" color="primary" />
-        {{ status }}
+        <q-spinner-dots v-if="!status" size="40px" color="primary" />
+        <h5 class="primary-color">{{ status }}</h5>
       </q-card-section>
     </q-card>
   </q-page>
@@ -61,6 +61,7 @@ export default {
     return {
       userObject,
       verifyEmailToken,
+      status,
     }
   },
 }
