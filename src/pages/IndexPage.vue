@@ -61,7 +61,7 @@
             <h2 class="primary-color">How it works</h2>
           </div>
           <div class="row">
-            <div class="col-3">
+            <div class="col-sm-12 col-md-3">
               <div class="row justify-center align-center">
                 <q-icon name="mail" class="primary-icon-styling" />
               </div>
@@ -75,7 +75,7 @@
             <div class="col-1 align-center">
               <q-icon class="secondary-icon-styling" name="trending_flat" />
             </div>
-            <div class="col-3">
+            <div class="col-sm-12 col-md-3">
               <div class="row justify-center align-center">
                 <q-icon name="folder_open" class="primary-icon-styling" />
               </div>
@@ -89,7 +89,7 @@
             <div class="col-1 align-center">
               <q-icon class="secondary-icon-styling" name="trending_flat" />
             </div>
-            <div class="col-3">
+            <div class="col-sm-12 col-md-3">
               <div class="row justify-center align-center">
                 <q-icon name="cloud_upload" class="primary-icon-styling" />
               </div>
