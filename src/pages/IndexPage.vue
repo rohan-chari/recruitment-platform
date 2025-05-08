@@ -3,12 +3,12 @@
     <div class="cta-container-full q-mb-lg row">
       <div class="cta">
         <div class="row">
-          <div class="col-12 primary-color row">
+          <div class="col-12 primary-color row justify-center">
             <h2 class="no-margin">People know you're great.</h2>
           </div>
         </div>
         <div class="row">
-          <div class="col-12 primary-color row q-mb-md">
+          <div class="col-12 primary-color row q-mb-md justify-center">
             <h2 class="no-margin">Show it.</h2>
           </div>
         </div>
@@ -356,12 +356,10 @@ export default {
 </script>
 <style scoped>
 .cta {
-  margin-top: 6rem;
-  display: flex;
-  flex-direction: column;
-  p {
-    font-size: 1rem;
-  }
+  margin-top: 3rem;
+  padding: 0 1rem;
+  align-items: center;
+  text-align: center;
 }
 .cta-image {
   border-radius: 25px;
@@ -374,7 +372,16 @@ export default {
 }
 
 .cta-action-buttons {
-  gap: 1em;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .cta-action-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 .email-waitlist-container {
@@ -386,8 +393,7 @@ export default {
   justify-content: space-around;
 }
 .learn-more-container {
-  margin-left: auto;
-  margin-right: auto;
+  padding: 1rem;
 }
 .learn-more-questions {
   display: flex;
@@ -411,9 +417,10 @@ export default {
   justify-content: space-around;
 }
 .cta-caption {
-  width: 50rem;
+  max-width: 800px;
+  width: 100%;
+  padding: 0 1rem;
 }
-
 @media (max-width: 768px) {
   .cta-container-full {
     flex-direction: column;
@@ -448,8 +455,8 @@ export default {
   }
 
   .use-cases-card {
-    width: 90%;
-    margin-bottom: 1rem;
+    width: 100%;
+    margin-bottom: 1.5rem;
   }
 }
 </style>
