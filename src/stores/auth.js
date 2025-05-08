@@ -35,15 +35,13 @@ export const useAuthStore = defineStore('auth', {
       })
     },
     async fetchUserFromDb() {
-      if (!this.dbUser) {
-        const response = await axios.get(`https://vouchforme.org/api/user/get-user`, {
-          params: {
-            uid: this.user.uid,
-            email: this.user.email,
-          },
-        })
-        this.dbUser = response.data
-      }
+      const response = await axios.get(`https://vouchforme.org/api/user/get-user`, {
+        params: {
+          uid: this.user.uid,
+          email: this.user.email,
+        },
+      })
+      this.dbUser = response.data
     },
   },
 })

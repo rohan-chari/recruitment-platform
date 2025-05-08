@@ -6,8 +6,52 @@
           <q-icon flat name="close" class="close-btn" @click="setupDialogModel = false" />
         </q-card-section>
         <div class="row">
-          <div class="col-12 col-md-4 text-center">
-            <h1>hi</h1>
+          <div class="col-12 col-md-4 text-center q-pl-lg">
+            <div
+              class="row setup-nav-bar q-pa-sm q-my-sm"
+              @click="handleSetupNavStep('Email Verification')"
+              :class="{ 'active-setup-nav': activeSetupNav === 'Email Verification' }"
+            >
+              <h6 v-if="!isEmailVerificationComplete" class="circle-num no-margin">1</h6>
+              <q-icon v-if="isEmailVerificationComplete" class="checkbox" name="task_alt" />
+              <h6 class="q-ma-md">Email Verification</h6>
+            </div>
+            <q-separator />
+            <div
+              class="row setup-nav-bar q-pa-sm q-my-sm"
+              @click="handleSetupNavStep('Occuptation')"
+              :class="{ 'active-setup-nav': activeSetupNav === 'Occuptation' }"
+            >
+              <h6 class="circle-num no-margin">2</h6>
+              <h6 class="q-ma-md">Occuptation</h6>
+            </div>
+            <q-separator />
+            <div
+              class="row setup-nav-bar q-pa-sm q-my-sm"
+              @click="handleSetupNavStep('Goals & Intentions')"
+              :class="{ 'active-setup-nav': activeSetupNav === 'Goals & Intentions' }"
+            >
+              <h6 class="circle-num no-margin">3</h6>
+              <h6 class="q-ma-md">Goals & Intentions</h6>
+            </div>
+            <q-separator />
+            <div
+              class="row setup-nav-bar q-pa-sm q-my-sm"
+              :class="{ 'active-setup-nav': activeSetupNav === 'Profile Picture & Bio' }"
+              @click="handleSetupNavStep('Profile Picture & Bio')"
+            >
+              <h6 class="circle-num no-margin">4</h6>
+              <h6 class="q-ma-md">Profile Picture & Bio</h6>
+            </div>
+            <q-separator />
+            <div
+              class="row setup-nav-bar q-pa-sm q-my-sm"
+              @click="handleSetupNavStep('Preview Profile')"
+              :class="{ 'active-setup-nav': activeSetupNav === 'Preview Profile' }"
+            >
+              <h6 class="circle-num no-margin">5</h6>
+              <h6 class="q-ma-md">Preview Profile</h6>
+            </div>
           </div>
           <div class="col-12 col-md-8 q-pa-md">
             <q-card-section class="q-pa-sm dialog-section" align="center">
@@ -37,13 +81,13 @@
                 />
               </div>
               <q-card-section align="center">
-                <div class="row justify-center">
+                <div v-if="userDbObject?.emailVerified" class="row justify-center">
                   <h6 class="secondary-color no-margin">Email verified!</h6>
                 </div>
               </q-card-section>
             </q-card-section>
             <q-card-section
-              v-if="displayVerificationCode"
+              v-if="displayVerificationCode && !userDbObject?.emailVerified"
               class="q-pa-sm dialog-section q-mb-md"
               align="center"
             >
@@ -64,7 +108,6 @@
                 />
               </div>
               <q-btn v-if="isCodeComplete" class="btn-primary" label="verify" @click="verifyCode" />
-              {{ verificationStatus }}
             </q-card-section>
           </div>
         </div>
@@ -92,7 +135,6 @@ export default {
     })
 
     const displayVerificationCode = ref(false)
-    const verificationStatus = ref(null)
     //const router = useRouter()
     //const $q = useQuasar()
     const userStore = useAuthStore()
@@ -101,6 +143,11 @@ export default {
     const userDbObject = computed(() => userStore.userDbObject)
 
     const isCodeComplete = computed(() => code.value.every((char) => char.length === 1))
+
+    //navsteps completion status
+    const isEmailVerificationComplete = computed(() => userDbObject.value?.emailVerified)
+
+    const activeSetupNav = ref('Email Verification')
 
     const handleSendVerificationEmail = async () => {
       await axios.post('https://vouchforme.org/api/registration/send-verification-email', {
@@ -135,29 +182,24 @@ export default {
       const pasted = event.clipboardData.getData('text').trim()
 
       if (/^\d{6}$/.test(pasted)) {
-        // valid 6-digit code
         for (let i = 0; i < 6; i++) {
           code.value[i] = pasted[i]
         }
 
-        // Focus last input so users can hit Enter or trigger validation
         nextTick(() => codeInputs.value[5]?.focus())
       }
 
-      event.preventDefault() // prevent default paste behavior
+      event.preventDefault()
     }
 
     const verifyCode = async () => {
       const token = code.value.join('')
-      const response = await axios.get(
-        `https://vouchforme.org/api/registration/verify-email?token=${token}`,
-      )
+      await axios.get(`https://vouchforme.org/api/registration/verify-email?token=${token}`)
+      userStore.fetchUserFromDb()
+    }
 
-      if (response.data.emailVerified) {
-        verificationStatus.value = 'YERRRRR'
-      } else {
-        verificationStatus.value = 'NAURRRR'
-      }
+    const handleSetupNavStep = (step) => {
+      activeSetupNav.value = step
     }
 
     return {
@@ -173,8 +215,10 @@ export default {
       handlePaste,
       isCodeComplete,
       verifyCode,
-      verificationStatus,
       userDbObject,
+      handleSetupNavStep,
+      activeSetupNav,
+      isEmailVerificationComplete,
     }
   },
 }
@@ -201,5 +245,26 @@ export default {
   .dialog-container {
     min-height: 400px;
   }
+}
+.setup-nav-bar {
+  align-items: center;
+  border-radius: 15px;
+}
+.setup-nav-bar:hover {
+  cursor: pointer;
+  background-color: rgb(219, 219, 219);
+}
+.circle-num {
+  width: 2.5rem;
+  height: 2.5rem;
+  line-height: 2.5rem;
+  text-align: center;
+  border-radius: 50%;
+  border: 2px solid #000;
+  display: inline-block;
+  font-size: 1.5rem;
+}
+.active-setup-nav {
+  background-color: rgb(219, 219, 219);
 }
 </style>
