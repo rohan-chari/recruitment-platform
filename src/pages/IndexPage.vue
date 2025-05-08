@@ -1,6 +1,6 @@
 <template>
-  <q-page class="flex primary-background-color">
-    <div class="cta-container-full row">
+  <q-page class="flex primary-background-color justify-center">
+    <div class="cta-container-full q-mb-lg row">
       <div class="cta">
         <div class="row">
           <div class="col-12 primary-color row">
@@ -47,9 +47,9 @@
           <p class="no-margin secondary-color">{{ waitlistCount }} members are in. Join now!</p>
         </div>
       </div>
-      <div>
-        <img alt="Text with recruiter" class="cta-image" src="~assets/cta-image.png" width="400" />
-      </div>
+    </div>
+    <div class="row q-mt-lg">
+      <img alt="Text with recruiter" class="cta-image" src="~assets/cta-image.jpg" width="1100" />
     </div>
   </q-page>
   <q-separator />
