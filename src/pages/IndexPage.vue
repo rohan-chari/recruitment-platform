@@ -57,7 +57,7 @@
     <div class="learn-more-container">
       <div class="row">
         <div id="learnMoreSection" class="col-sm-12 col-md-12 q-pl-xl">
-          <div class="row">
+          <div class="row justify-center">
             <h2 class="primary-color">How it works</h2>
           </div>
           <div class="row">
@@ -72,7 +72,7 @@
                 <h5 class="secondary-color no-margin">Invite someone to vouch for you</h5>
               </div>
             </div>
-            <div class="col-1 align-center">
+            <div class="col-1 align-center" v-if="!$q.screen.lt.md">
               <q-icon class="secondary-icon-styling" name="trending_flat" />
             </div>
             <div class="col-sm-12 col-md-3">
@@ -86,7 +86,7 @@
                 <h5 class="secondary-color no-margin">Tag, store, and categorize by use case</h5>
               </div>
             </div>
-            <div class="col-1 align-center">
+            <div class="col-1 align-center" v-if="!$q.screen.lt.md">
               <q-icon class="secondary-icon-styling" name="trending_flat" />
             </div>
             <div class="col-sm-12 col-md-3">
@@ -143,68 +143,61 @@
   -->
 
   <q-page class="secondary-gray-container q-pb-lg">
-    <div class="learn-more-container">
-      <div class="row">
-        <div class="col-sm-12 col-md-12 q-pl-xl">
-          <div class="row">
-            <h2 class="primary-color">One tool. Endless use cases.</h2>
-          </div>
-          <div class="row use-cases-container">
-            <q-card class="col-sm-12 col-md-2 use-cases-card">
-              <q-card-section>
-                <q-icon name="school" class="primary-icon-styling" />
-              </q-card-section>
-              <q-card-section>
-                <h4 class="no-margin">Students & Grads</h4>
-              </q-card-section>
-              <q-card-section>
-                <h5 class="secondary-color no-margin">College apps, internships, scholarships</h5>
-              </q-card-section>
-            </q-card>
-            <q-card class="col-sm-12 col-md-2 use-cases-card">
-              <q-card-section>
-                <q-icon name="business_center" class="primary-icon-styling" />
-              </q-card-section>
-              <q-card-section>
-                <h4 class="no-margin">Professionals</h4>
-              </q-card-section>
-              <q-card-section>
-                <h5 class="secondary-color no-margin">Job changes, career pivots</h5>
-              </q-card-section>
-            </q-card>
-            <q-card class="col-sm-12 col-md-2 use-cases-card">
-              <q-card-section>
-                <q-icon name="construction" class="primary-icon-styling" />
-              </q-card-section>
-              <q-card-section>
-                <h4 class="no-margin">Freelancers</h4>
-              </q-card-section>
-              <q-card-section>
-                <h5 class="secondary-color no-margin">Show client testimonials</h5>
-              </q-card-section>
-            </q-card>
-            <q-card class="col-sm-12 col-md-2 use-cases-card">
-              <q-card-section>
-                <q-icon name="home" class="primary-icon-styling" />
-              </q-card-section>
-              <q-card-section>
-                <h4 class="no-margin">Renters</h4>
-              </q-card-section>
-              <q-card-section>
-                <h5 class="secondary-color no-margin">Secure housing with trusted references</h5>
-              </q-card-section>
-            </q-card>
-          </div>
-        </div>
+    <div class="learn-more-container q-pa-md">
+      <div class="row justify-center q-mb-md">
+        <h2 class="primary-color text-center">One tool. Endless use cases.</h2>
+      </div>
+
+      <div class="row q-col-gutter-sm justify-center">
+        <q-card class="col-12 col-sm-6 col-md-3 use-cases-card">
+          <q-card-section>
+            <q-icon name="school" class="primary-icon-styling" />
+          </q-card-section>
+          <q-card-section>
+            <h4 class="no-margin">Students & Grads</h4>
+            <h5 class="secondary-color no-margin">College apps, internships, scholarships</h5>
+          </q-card-section>
+        </q-card>
+
+        <q-card class="col-12 col-sm-6 col-md-3 use-cases-card">
+          <q-card-section>
+            <q-icon name="business_center" class="primary-icon-styling" />
+          </q-card-section>
+          <q-card-section>
+            <h4 class="no-margin">Professionals</h4>
+            <h5 class="secondary-color no-margin">Job changes, career pivots</h5>
+          </q-card-section>
+        </q-card>
+
+        <q-card class="col-12 col-sm-6 col-md-3 use-cases-card">
+          <q-card-section>
+            <q-icon name="construction" class="primary-icon-styling" />
+          </q-card-section>
+          <q-card-section>
+            <h4 class="no-margin">Freelancers</h4>
+            <h5 class="secondary-color no-margin">Show client testimonials</h5>
+          </q-card-section>
+        </q-card>
+
+        <q-card class="col-12 col-sm-6 col-md-3 use-cases-card">
+          <q-card-section>
+            <q-icon name="home" class="primary-icon-styling" />
+          </q-card-section>
+          <q-card-section>
+            <h4 class="no-margin">Renters</h4>
+            <h5 class="secondary-color no-margin">Secure housing with trusted references</h5>
+          </q-card-section>
+        </q-card>
       </div>
     </div>
   </q-page>
+
   <q-separator />
   <q-page class="primary-background-color q-pb-lg">
     <div class="learn-more-container">
       <div class="row">
         <div class="col-sm-12 col-md-12 q-pl-xl">
-          <div class="row">
+          <div class="row justify-center">
             <h2 class="primary-color">Start building your reference vault today.</h2>
           </div>
           <div class="row">
