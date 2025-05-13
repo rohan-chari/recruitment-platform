@@ -19,11 +19,12 @@
             <q-separator />
             <div
               class="row setup-nav-bar q-pa-sm q-my-sm"
-              @click="handleSetupNavStep('Occuptation')"
-              :class="{ 'active-setup-nav': activeSetupNav === 'Occuptation' }"
+              :class="{ 'active-setup-nav': activeSetupNav === 'Profile Picture & Bio' }"
+              @click="handleSetupNavStep('Profile Picture & Bio')"
             >
-              <h6 class="circle-num no-margin">2</h6>
-              <h6 class="q-ma-md">Occuptation</h6>
+              <h6 v-if="!isPersonalDetailsComplete" class="circle-num no-margin">2</h6>
+              <q-icon v-if="isPersonalDetailsComplete" class="checkbox" name="task_alt" />
+              <h6 class="q-ma-md">Profile Picture & Bio</h6>
             </div>
             <q-separator />
             <div
@@ -37,11 +38,11 @@
             <q-separator />
             <div
               class="row setup-nav-bar q-pa-sm q-my-sm"
-              :class="{ 'active-setup-nav': activeSetupNav === 'Profile Picture & Bio' }"
-              @click="handleSetupNavStep('Profile Picture & Bio')"
+              @click="handleSetupNavStep('Occuptation')"
+              :class="{ 'active-setup-nav': activeSetupNav === 'Occuptation' }"
             >
               <h6 class="circle-num no-margin">4</h6>
-              <h6 class="q-ma-md">Profile Picture & Bio</h6>
+              <h6 class="q-ma-md">Occuptation</h6>
             </div>
             <q-separator />
             <div
@@ -53,7 +54,7 @@
               <h6 class="q-ma-md">Preview Profile</h6>
             </div>
           </div>
-          <div class="col-12 col-md-8 q-pa-md">
+          <div class="col-12 col-md-8 q-pa-md" v-if="activeSetupNav == 'Email Verification'">
             <q-card-section class="q-pa-sm dialog-section" align="center">
               <h2 class="primary-color no-margin">Account Setup</h2>
               <h6 class="secondary-color no-margin">
@@ -110,6 +111,64 @@
               <q-btn v-if="isCodeComplete" class="btn-primary" label="verify" @click="verifyCode" />
             </q-card-section>
           </div>
+          <div class="col-12 col-md-8 q-pa-md" v-if="activeSetupNav == 'Profile Picture & Bio'">
+            <q-card-section class="q-pa-sm dialog-section" align="center">
+              <h2 class="primary-color no-margin">Personal Details</h2>
+              <h6 class="secondary-color no-margin">Let's get some information about you.</h6>
+            </q-card-section>
+
+            <q-card-section class="q-pa-sm dialog-section" align="center">
+              <h6 class="primary-color no-margin">Let's start with your name.</h6>
+              <div class="row justify-center q-my-md verify-email-row">
+                <q-input
+                  v-model="userDbObject.firstName"
+                  outlined
+                  rounded
+                  class="col-12 col-md-6"
+                  label="First Name"
+                ></q-input>
+                <q-input
+                  v-model="userDbObject.middleName"
+                  outlined
+                  rounded
+                  class="col-12 col-md-6"
+                  label="Middle Initial (Optional)"
+                ></q-input>
+                <q-input
+                  v-model="userDbObject.lastName"
+                  outlined
+                  rounded
+                  class="col-12 col-md-6"
+                  label="Last Name"
+                ></q-input>
+              </div>
+            </q-card-section>
+            <q-card-section class="q-pa-sm dialog-section" align="center">
+              <h6 class="primary-color no-margin">Next, lets see what you look like.</h6>
+              <div v-if="imageUrl" class="row justify-center">
+                <div class="col-7">
+                  <img :src="imageUrl" spinner-color="primary" class="profile-picture" />
+                </div>
+              </div>
+              <div class="row justify-center q-my-md verify-email-row">
+                <input
+                  ref="fileInput"
+                  type="file"
+                  accept="image/*"
+                  @change="handleFileChange"
+                  class="hidden"
+                />
+
+                <q-btn
+                  label="Upload Image"
+                  icon="image"
+                  class="btn-primary"
+                  @click="triggerFileInput"
+                  rounded
+                />
+              </div>
+            </q-card-section>
+          </div>
         </div>
       </q-card>
     </q-dialog>
@@ -146,6 +205,9 @@ export default {
 
     //navsteps completion status
     const isEmailVerificationComplete = computed(() => userDbObject.value?.emailVerified)
+    const isPersonalDetailsComplete = computed(
+      () => userDbObject.value?.firstName && userDbObject.value?.lastName && imageUrl.value,
+    )
 
     const activeSetupNav = ref('Email Verification')
 
@@ -202,6 +264,25 @@ export default {
       activeSetupNav.value = step
     }
 
+    const fileInput = ref(null)
+    const imageUrl = ref(null)
+
+    const triggerFileInput = () => {
+      fileInput.value?.click()
+    }
+
+    const handleFileChange = (event) => {
+      const file = event.target.files[0]
+      if (!file) return
+
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        imageUrl.value = e.target.result
+        console.log(imageUrl.value)
+      }
+      reader.readAsDataURL(file)
+    }
+
     return {
       setupDialogModel,
       userObject,
@@ -219,6 +300,11 @@ export default {
       handleSetupNavStep,
       activeSetupNav,
       isEmailVerificationComplete,
+      triggerFileInput,
+      handleFileChange,
+      fileInput,
+      imageUrl,
+      isPersonalDetailsComplete,
     }
   },
 }
@@ -238,7 +324,7 @@ export default {
 }
 .dialog-container {
   width: 100%;
-  max-width: 900px;
+  max-width: 1100px;
 }
 
 @media (min-width: 600px) {
@@ -266,5 +352,13 @@ export default {
 }
 .active-setup-nav {
   background-color: rgb(219, 219, 219);
+}
+.upload-image-btn {
+  border-radius: 150px !important;
+}
+.profile-picture {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
 }
 </style>
