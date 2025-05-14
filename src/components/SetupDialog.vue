@@ -124,11 +124,13 @@
                   v-model="userDbObject.firstName"
                   outlined
                   rounded
+                  @update:model-value="saveUserProfile"
                   class="col-12 col-md-6"
                   label="First Name"
                 ></q-input>
                 <q-input
-                  v-model="userDbObject.middleName"
+                  v-model="userDbObject.middleInitial"
+                  @update:model-value="saveUserProfile"
                   outlined
                   rounded
                   class="col-12 col-md-6"
@@ -136,6 +138,7 @@
                 ></q-input>
                 <q-input
                   v-model="userDbObject.lastName"
+                  @update:model-value="saveUserProfile"
                   outlined
                   rounded
                   class="col-12 col-md-6"
@@ -178,6 +181,7 @@
 <script>
 import { computed, ref, nextTick } from 'vue'
 import { useAuthStore } from 'src/stores/auth'
+import { debounce } from 'lodash'
 import axios from 'axios'
 
 export default {
@@ -283,6 +287,14 @@ export default {
       reader.readAsDataURL(file)
     }
 
+    const saveUserProfile = debounce(async () => {
+      try {
+        await axios.patch('https://vouchforme.org/api/user/update-user', userDbObject.value)
+      } catch (err) {
+        console.error('Save failed:', err)
+      }
+    }, 700)
+
     return {
       setupDialogModel,
       userObject,
@@ -305,6 +317,7 @@ export default {
       fileInput,
       imageUrl,
       isPersonalDetailsComplete,
+      saveUserProfile,
     }
   },
 }
