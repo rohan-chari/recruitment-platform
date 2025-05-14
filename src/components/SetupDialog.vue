@@ -293,7 +293,7 @@ export default {
       } catch (err) {
         console.error('Save failed:', err)
       }
-    }, 700)
+    }, 1000)
 
     return {
       setupDialogModel,
