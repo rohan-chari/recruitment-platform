@@ -148,9 +148,13 @@
             </q-card-section>
             <q-card-section class="q-pa-sm dialog-section" align="center">
               <h6 class="primary-color no-margin">Next, lets see what you look like.</h6>
-              <div v-if="imageUrl" class="row justify-center">
+              <div v-if="userDbObject.profilePictureUrl" class="row justify-center">
                 <div class="col-7">
-                  <img :src="imageUrl" spinner-color="primary" class="profile-picture" />
+                  <img
+                    :src="userDbObject.profilePictureUrl"
+                    spinner-color="primary"
+                    class="profile-picture"
+                  />
                 </div>
               </div>
               <div class="row justify-center q-my-md verify-email-row">
@@ -182,6 +186,8 @@
 import { computed, ref, nextTick } from 'vue'
 import { useAuthStore } from 'src/stores/auth'
 import { debounce } from 'lodash'
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { storage } from 'src/firebase'
 import axios from 'axios'
 
 export default {
@@ -210,7 +216,10 @@ export default {
     //navsteps completion status
     const isEmailVerificationComplete = computed(() => userDbObject.value?.emailVerified)
     const isPersonalDetailsComplete = computed(
-      () => userDbObject.value?.firstName && userDbObject.value?.lastName && imageUrl.value,
+      () =>
+        userDbObject.value?.firstName &&
+        userDbObject.value?.lastName &&
+        userDbObject.value.profilePictureUrl,
     )
 
     const activeSetupNav = ref('Email Verification')
@@ -275,16 +284,22 @@ export default {
       fileInput.value?.click()
     }
 
-    const handleFileChange = (event) => {
+    const handleFileChange = async (event) => {
       const file = event.target.files[0]
-      if (!file) return
+      if (!file || !userObject.value?.uid) return
 
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        imageUrl.value = e.target.result
-        console.log(imageUrl.value)
+      try {
+        const storagePath = `profile-pictures/${userObject.value.uid}/${file.name}`
+        const fileRef = storageRef(storage, storagePath)
+        await uploadBytes(fileRef, file)
+
+        const url = await getDownloadURL(fileRef)
+        imageUrl.value = url
+        userDbObject.value.profilePictureUrl = url
+        await axios.patch('https://vouchforme.org/api/user/update-user', userDbObject.value)
+      } catch (err) {
+        console.error('Image upload failed:', err)
       }
-      reader.readAsDataURL(file)
     }
 
     const saveUserProfile = debounce(async () => {
