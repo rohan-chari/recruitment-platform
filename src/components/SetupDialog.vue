@@ -57,68 +57,69 @@
           <div class="col-12 col-md-8 q-pa-md">
             <div v-if="activeSetupNav === 'Email Verification'">
               <q-card class="q-pa-md q-mb-md" flat>
-              <q-card-section class="q-pa-sm q-mb-sm dialog-section text-center">
+                <q-card-section class="q-pa-sm q-mb-sm dialog-section text-center">
                   <h2 class="primary-color no-margin">Account Setup</h2>
                   <h6 class="secondary-color no-margin">
                     Let's get started by verifying your email address.
                   </h6>
                 </q-card-section>
 
-              <q-card-section class="q-pa-sm dialog-section" align="center">
-                <h6 class="primary-color no-margin">We'll send a verification link to:</h6>
-                <div class="row justify-center q-my-md verify-email-row">
-                  <q-input
-                    class="disabled-email-input"
-                    v-model="userObject.email"
-                    disable
-                    outlined
-                    rounded
-                  ></q-input>
-                  <q-btn
-                    label="Send Email"
-                    size="1.1rem"
-                    @click="handleSendVerificationEmail"
-                    :loading="isEmailSending"
-                    :disable="userDbObject?.emailVerified || isEmailSending"
-                    rounded
-                    class="btn-primary"
-                  />
-                </div>
-                <q-card-section align="center">
-                  <div v-if="userDbObject?.emailVerified" class="row justify-center">
-                    <h6 class="secondary-color no-margin">Email verified!</h6>
+                <q-card-section class="q-pa-sm dialog-section" align="center">
+                  <h6 class="primary-color no-margin">We'll send a verification link to:</h6>
+                  <div class="row justify-center q-my-md verify-email-row">
+                    <q-input
+                      class="disabled-email-input"
+                      v-model="userObject.email"
+                      disable
+                      outlined
+                      rounded
+                    ></q-input>
+                    <q-btn
+                      label="Send Email"
+                      size="1.1rem"
+                      @click="handleSendVerificationEmail"
+                      :loading="isEmailSending"
+                      :disable="userDbObject?.emailVerified || isEmailSending"
+                      rounded
+                      class="btn-primary"
+                    />
                   </div>
+                  <q-card-section align="center">
+                    <div v-if="userDbObject?.emailVerified" class="row justify-center">
+                      <h6 class="secondary-color no-margin">Email verified!</h6>
+                    </div>
+                  </q-card-section>
                 </q-card-section>
-              </q-card-section>
-              <q-card-section
-                v-if="displayVerificationCode && !userDbObject?.emailVerified"
-                class="q-pa-sm dialog-section q-mb-md"
-                align="center"
-              >
-                <div class="row justify-center q-my-md q-gutter-sm">
-                  <q-input
-                    v-for="(digit, index) in code"
-                    :key="index"
-                    v-model="code[index]"
-                    maxlength="1"
-                    type="text"
-                    class="verification-box"
-                    outlined
-                    input-class="text-center"
-                    @keydown="handleKeyDown($event, index)"
-                    @keyup="handleKeyUp(index)"
-                    :ref="(el) => (codeInputs[index] = el)"
-                    @paste="handlePaste"
+                <q-card-section
+                  v-if="displayVerificationCode && !userDbObject?.emailVerified"
+                  class="q-pa-sm dialog-section q-mb-md"
+                  align="center"
+                >
+                  <div class="row justify-center q-my-md q-gutter-sm">
+                    <q-input
+                      v-for="(digit, index) in code"
+                      :key="index"
+                      v-model="code[index]"
+                      maxlength="1"
+                      type="text"
+                      class="verification-box"
+                      outlined
+                      input-class="text-center"
+                      @keydown="handleKeyDown($event, index)"
+                      @keyup="handleKeyUp(index)"
+                      :ref="(el) => (codeInputs[index] = el)"
+                      @paste="handlePaste"
+                    />
+                  </div>
+                  <q-btn
+                    v-if="isCodeComplete"
+                    class="btn-primary"
+                    label="verify"
+                    :loading="isVerifying"
+                    @click="verifyCode"
                   />
-                </div>
-                <q-btn
-                  v-if="isCodeComplete"
-                  class="btn-primary"
-                  label="verify"
-                  :loading="isVerifying"
-                  @click="verifyCode"
-                />
-              </q-card-section>
+                </q-card-section>
+              </q-card>
             </div>
 
             <div v-if="activeSetupNav === 'Profile Picture & Bio'">
@@ -153,8 +154,9 @@
                   ></q-input>
                 </div>
               </q-card-section>
+
               <q-card-section class="q-pa-sm dialog-section" align="center">
-                <h6 class="primary-color no-margin">Next, lets see what you look like.</h6>
+                <h6 class="primary-color no-margin">Next, let's see what you look like.</h6>
                 <div v-if="userDbObject.profilePictureUrl" class="row justify-center">
                   <div class="col-7">
                     <img
@@ -172,13 +174,27 @@
                     @change="handleFileChange"
                     class="hidden"
                   />
-
                   <q-btn
                     label="Upload Image"
                     icon="image"
                     class="btn-primary"
                     @click="triggerFileInput"
                     rounded
+                  />
+                </div>
+              </q-card-section>
+
+              <q-card-section class="q-pa-sm dialog-section" align="center">
+                <h6 class="primary-color no-margin">Tell us about yourself</h6>
+                <div class="row justify-center q-my-md">
+                  <q-input
+                    v-model="userDbObject.userBio"
+                    outlined
+                    type="textarea"
+                    label="Your bio"
+                    hint="Share a brief introduction about yourself"
+                    class="col-12"
+                    :rules="[(val) => !!val || 'Bio is required']"
                   />
                 </div>
               </q-card-section>
@@ -257,6 +273,7 @@
                     <p class="text-subtitle1">
                       {{ userDbObject?.occupation }} at {{ userDbObject?.company }}
                     </p>
+                    <p class="text-body1 q-mt-md">{{ userDbObject?.userBio }}</p>
                   </div>
                 </div>
                 <div class="row q-mb-md">
@@ -681,6 +698,15 @@ export default {
 
     watch(
       () => userDbObject.value?.experience,
+      (newVal) => {
+        if (newVal) {
+          saveUserProfile()
+        }
+      },
+    )
+
+    watch(
+      () => userDbObject.value?.userBio,
       (newVal) => {
         if (newVal) {
           saveUserProfile()
