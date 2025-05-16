@@ -38,11 +38,11 @@
             <q-separator />
             <div
               class="row setup-nav-bar q-pa-sm q-my-sm"
-              @click="handleSetupNavStep('Occuptation')"
-              :class="{ 'active-setup-nav': activeSetupNav === 'Occuptation' }"
+              @click="handleSetupNavStep('Occupation')"
+              :class="{ 'active-setup-nav': activeSetupNav === 'Occupation' }"
             >
               <h6 class="circle-num no-margin">4</h6>
-              <h6 class="q-ma-md">Occuptation</h6>
+              <h6 class="q-ma-md">Occupation</h6>
             </div>
             <q-separator />
             <div
@@ -154,9 +154,13 @@
               </q-card-section>
               <q-card-section class="q-pa-sm dialog-section" align="center">
                 <h6 class="primary-color no-margin">Next, lets see what you look like.</h6>
-                <div v-if="imageUrl" class="row justify-center">
+                <div v-if="userDbObject.profilePictureUrl" class="row justify-center">
                   <div class="col-7">
-                    <img :src="imageUrl" spinner-color="primary" class="profile-picture" />
+                    <img
+                      :src="userDbObject.profilePictureUrl"
+                      spinner-color="primary"
+                      class="profile-picture"
+                    />
                   </div>
                 </div>
                 <div class="row justify-center q-my-md verify-email-row">
@@ -204,7 +208,7 @@
               </q-card-section>
             </div>
 
-            <div v-if="activeSetupNav === 'Occuptation'">
+            <div v-if="activeSetupNav === 'Occupation'">
               <q-card-section class="q-pa-sm dialog-section" align="center">
                 <h2 class="primary-color no-margin">Occupation</h2>
                 <h6 class="secondary-color no-margin">Tell us about your work</h6>
@@ -241,7 +245,7 @@
               <q-card-section class="q-pa-sm dialog-section">
                 <div class="row justify-center q-mb-lg">
                   <q-avatar size="150px">
-                    <img :src="imageUrl" />
+                    <img :src="userDbObject.profilePictureUrl" />
                   </q-avatar>
                 </div>
                 <div class="row q-mb-md">
@@ -303,6 +307,7 @@ import { computed, ref, nextTick, watch } from 'vue'
 import { useAuthStore } from 'src/stores/auth'
 import { useQuasar } from 'quasar'
 import axios from 'axios'
+import { debounce } from 'lodash'
 
 export default {
   props: {
@@ -331,7 +336,10 @@ export default {
     //navsteps completion status
     const isEmailVerificationComplete = computed(() => userDbObject.value?.emailVerified)
     const isPersonalDetailsComplete = computed(
-      () => userDbObject.value?.firstName && userDbObject.value?.lastName && imageUrl.value,
+      () =>
+        userDbObject.value?.firstName &&
+        userDbObject.value?.lastName &&
+        userDbObject.value?.profilePictureUrl,
     )
 
     const activeSetupNav = ref('Email Verification')
@@ -432,7 +440,7 @@ export default {
         return
       }
 
-      if (step === 'Occuptation' && !isGoalsComplete.value) {
+      if (step === 'Occupation' && !isGoalsComplete.value) {
         $q.notify({
           type: 'warning',
           message: 'Please complete your goals and intentions first',
@@ -469,7 +477,7 @@ export default {
         return false
       }
 
-      if (!imageUrl.value) {
+      if (!userDbObject.value?.profilePictureUrl) {
         $q.notify({
           type: 'negative',
           message: 'Please upload a profile picture',
@@ -495,7 +503,7 @@ export default {
         'Email Verification',
         'Profile Picture & Bio',
         'Goals & Intentions',
-        'Occuptation',
+        'Occupation',
         'Preview Profile',
       ]
 
@@ -510,7 +518,7 @@ export default {
         'Email Verification',
         'Profile Picture & Bio',
         'Goals & Intentions',
-        'Occuptation',
+        'Occupation',
         'Preview Profile',
       ]
 
@@ -521,7 +529,6 @@ export default {
     }
 
     const fileInput = ref(null)
-    const imageUrl = ref(null)
     const isUploading = ref(false)
 
     const triggerFileInput = () => {
@@ -555,7 +562,7 @@ export default {
         // First read the file as data URL for preview
         const reader = new FileReader()
         reader.onload = async (e) => {
-          imageUrl.value = e.target.result
+          userDbObject.value.profilePictureUrl = e.target.result
 
           // Create form data for upload
           const formData = new FormData()
@@ -584,7 +591,7 @@ export default {
           message:
             err.response?.data?.message || 'Failed to upload profile picture. Please try again.',
         })
-        imageUrl.value = null // Reset preview on error
+        userDbObject.value.profilePictureUrl = null
       } finally {
         isUploading.value = false
       }
@@ -601,28 +608,24 @@ export default {
       'Mentorship opportunities',
     ]
 
-    // Debounced save function
-    const saveUserData = async (data) => {
+    const saveUserProfile = debounce(async () => {
       try {
-        await axios.post('https://vouchforme.org/api/user/update', {
-          uid: userObject.value.uid,
-          ...data,
-        })
+        await axios.patch('https://vouchforme.org/api/user/update-user', userDbObject.value)
       } catch (err) {
-        console.error('Error saving user data:', err)
+        console.error('Save failed:', err)
         $q.notify({
           type: 'negative',
           message: 'Failed to save changes. Please try again.',
         })
       }
-    }
+    }, 1000)
 
     // Watch for changes in user data fields
     watch(
       () => userDbObject.value?.firstName,
       (newVal) => {
         if (newVal) {
-          saveUserData({ firstName: newVal })
+          saveUserProfile()
         }
       },
     )
@@ -631,7 +634,7 @@ export default {
       () => userDbObject.value?.lastName,
       (newVal) => {
         if (newVal) {
-          saveUserData({ lastName: newVal })
+          saveUserProfile()
         }
       },
     )
@@ -640,7 +643,7 @@ export default {
       () => userDbObject.value?.goals,
       (newVal) => {
         if (newVal) {
-          saveUserData({ goals: newVal })
+          saveUserProfile()
         }
       },
     )
@@ -649,7 +652,7 @@ export default {
       () => userDbObject.value?.otherGoals,
       (newVal) => {
         if (newVal) {
-          saveUserData({ otherGoals: newVal })
+          saveUserProfile()
         }
       },
     )
@@ -658,7 +661,7 @@ export default {
       () => userDbObject.value?.occupation,
       (newVal) => {
         if (newVal) {
-          saveUserData({ occupation: newVal })
+          saveUserProfile()
         }
       },
     )
@@ -667,7 +670,7 @@ export default {
       () => userDbObject.value?.company,
       (newVal) => {
         if (newVal) {
-          saveUserData({ company: newVal })
+          saveUserProfile()
         }
       },
     )
@@ -676,7 +679,7 @@ export default {
       () => userDbObject.value?.experience,
       (newVal) => {
         if (newVal) {
-          saveUserData({ experience: newVal })
+          saveUserProfile()
         }
       },
     )
@@ -701,7 +704,6 @@ export default {
       triggerFileInput,
       handleFileChange,
       fileInput,
-      imageUrl,
       isPersonalDetailsComplete,
       isEmailSending,
       isVerifying,
