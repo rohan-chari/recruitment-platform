@@ -6,92 +6,119 @@
           <q-icon flat name="close" class="close-btn" @click="dialogModel = false" />
         </q-card-section>
 
-        <q-card-section class="q-pt-none dialog-section" align="center">
-          <h4>Get Started</h4>
-          <h6 class="secondary-color">Create your account to start chatting with recruiters.</h6>
+        <q-card-section class="dialog-section" align="center">
+          <h2 class="text-h4 text-weight-medium q-mb-sm primary-color">Get Started</h2>
+          <h6 class="text-subtitle1 text-grey-7 q-ma-none">
+            Create your account to start chatting with recruiters.
+          </h6>
         </q-card-section>
 
-        <q-card-section>
+        <q-card-section class="form-section">
           <div v-if="registrationActive">
-            <q-form @submit.prevent="handleCreateAccount">
-              <h6 class="card-subheader">Create Account</h6>
-              <div class="row sign-in-option">
-                <p class="card-subheader secondary-color">Already have an account?</p>
-                <p
-                  class="card-subheader create-link"
-                  @click="registrationActive = !registrationActive"
-                >
-                  Sign in here.
-                </p>
+            <q-form @submit.prevent="handleCreateAccount" class="auth-form">
+              <div class="row justify-between items-center q-mb-lg">
+                <h6 class="text-h6 text-weight-medium q-ma-none">Create Account</h6>
+                <div class="row items-center">
+                  <span class="text-subtitle1 text-grey-7">Already have an account?</span>
+                  <q-btn
+                    flat
+                    dense
+                    class="toggle-auth-btn"
+                    label="Sign in here"
+                    @click="registrationActive = !registrationActive"
+                  />
+                </div>
               </div>
-              <div class="create-org-form">
-                <q-input
-                  id="registrationEmail"
-                  v-model="registrationEmail"
-                  filled
-                  dense
-                  label="Email"
-                ></q-input>
-                <q-input
-                  id="registrationEmailVerify"
-                  v-model="registrationEmailVerify"
-                  filled
-                  dense
-                  fill-input
-                  label="Verify Email"
-                ></q-input>
-                <q-input
-                  id="registrationPassword"
-                  v-model="registrationPassword"
-                  filled
-                  type="password"
-                  dense
-                  fill-input
-                  label="Password"
-                ></q-input>
-                <q-input
-                  id="registrationPasswordVerify"
-                  v-model="registrationPasswordVerify"
-                  filled
-                  type="password"
-                  dense
-                  fill-input
-                  label="Verify Password"
-                ></q-input>
-                <q-btn rounded color="black" label="Create Account" type="submit" />
+
+              <div class="row q-col-gutter-md">
+                <div class="col-12">
+                  <q-input
+                    id="registrationEmail"
+                    v-model="registrationEmail"
+                    class="modern-input"
+                    outlined
+                    label="Email"
+                  />
+                </div>
+                <div class="col-12">
+                  <q-input
+                    id="registrationEmailVerify"
+                    v-model="registrationEmailVerify"
+                    class="modern-input"
+                    outlined
+                    label="Verify Email"
+                  />
+                </div>
+                <div class="col-12">
+                  <q-input
+                    id="registrationPassword"
+                    v-model="registrationPassword"
+                    class="modern-input"
+                    outlined
+                    type="password"
+                    label="Password"
+                  />
+                </div>
+                <div class="col-12">
+                  <q-input
+                    id="registrationPasswordVerify"
+                    v-model="registrationPasswordVerify"
+                    class="modern-input"
+                    outlined
+                    type="password"
+                    label="Verify Password"
+                  />
+                </div>
+                <div class="col-12">
+                  <q-btn
+                    class="full-width btn-primary q-mt-md"
+                    label="Create Account"
+                    type="submit"
+                  />
+                </div>
               </div>
             </q-form>
           </div>
-          <div v-if="!registrationActive">
-            <q-form @submit.prevent="handleSignIn">
-              <h6 class="card-subheader">Create Account</h6>
-              <div class="row sign-in-option">
-                <p class="card-subheader secondary-color">Don't have an account?</p>
-                <p
-                  class="card-subheader create-link"
-                  @click="registrationActive = !registrationActive"
-                >
-                  Sign up here.
-                </p>
+
+          <div v-else>
+            <q-form @submit.prevent="handleSignIn" class="auth-form">
+              <div class="row justify-between items-center q-mb-lg">
+                <h6 class="text-h6 text-weight-medium q-ma-none">Sign In</h6>
+                <div class="row items-center">
+                  <span class="text-subtitle1 text-grey-7">Don't have an account?</span>
+                  <q-btn
+                    flat
+                    dense
+                    class="toggle-auth-btn"
+                    label="Sign up here"
+                    @click="registrationActive = !registrationActive"
+                  />
+                </div>
               </div>
-              <div class="create-org-form">
-                <q-input
-                  id="signInEmail"
-                  v-model="signInEmail"
-                  filled
-                  dense
-                  label="Email"
-                ></q-input>
-                <q-input
-                  id="signInPassword"
-                  v-model="signInPassword"
-                  filled
-                  dense
-                  type="password"
-                  fill-input
-                  label="Password"
-                ></q-input>
-                <q-btn rounded color="black" label="Sign In" type="submit" />
+
+              <div class="row q-col-gutter-md">
+                <div class="col-12">
+                  <q-input
+                    id="signInEmail"
+                    v-model="signInEmail"
+                    class="modern-input"
+                    outlined
+                    label="Email"
+                  />
+                </div>
+                <div class="col-12">
+                  <q-input
+                    id="signInPassword"
+                    v-model="signInPassword"
+                    class="modern-input"
+                    outlined
+                    type="password"
+                    label="Password"
+                  />
+                </div>
+                <div class="col-12">
+                  <q-btn class="full-width btn-primary q-mt-md" label="Sign In" type="submit" />
+                </div>
               </div>
             </q-form>
           </div>
@@ -220,77 +247,108 @@ export default {
   },
 }
 </script>
+
 <style lang="scss" scoped>
-.registration-icons {
-  font-size: 10rem;
-}
-.icon-container {
-  text-align: center;
-  transition: transform 0.3s ease;
-}
-
-.icon-container:hover {
-  background-color: rgba(209, 209, 209, 0.26);
-  cursor: pointer;
-  transform: scale(1.05);
-}
-.org-cand-container {
-  gap: 3rem;
-  padding-bottom: 1.5rem;
-  justify-content: center;
-}
-.selected-user-type {
-  border: 2.5px black solid !important;
-}
-.next-btn-container {
-  justify-content: center;
-  font-size: 2rem;
-  gap: 1rem;
-}
-.next-btn {
-  cursor: pointer;
-  border: 2px solid black !important;
-  border-radius: 50%;
-  padding: 8px;
-  font-size: 12px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.dialog-container {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 16px;
+  background: #ffffff;
 }
 
-.next-btn:hover {
-  background-color: black;
-  transform: scale(1.15);
+.dialog-section {
+  padding: 1.5rem 2rem;
+}
+
+.form-section {
+  padding: 0 2rem 2rem;
+}
+
+.close-btn {
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
   transition: all 0.2s ease;
-  color: white;
-}
-.org-missing-text {
-  margin-top: 0.25rem;
-  justify-content: center;
-  font-size: 0.8rem;
-
-  .secondary-color {
-    color: #666;
-    margin-right: 0.25rem;
-  }
-}
-.create-org-container {
-  text-align: center;
-}
-
-.create-link {
-  color: #007aff;
-  text-decoration: underline;
-  cursor: pointer;
-  font-weight: 500;
-  transition: color 0.2s ease;
 
   &:hover {
-    color: #005bbb;
+    color: var(--btn-primary);
+    transform: scale(1.1);
   }
 }
-.sign-in-option {
-  display: flex;
-  gap: 0.2rem;
+
+.auth-form {
+  .modern-input {
+    :deep(.q-field__control) {
+      height: 56px;
+      border-radius: 8px;
+      background: #f8f9fa;
+
+      &:hover {
+        border-color: rgba(233, 99, 108, 0.3);
+      }
+
+      &.q-field__control--focused {
+        border-color: var(--btn-primary);
+        background: #ffffff;
+      }
+    }
+
+    :deep(.q-field__label) {
+      top: 18px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    &.q-field--float :deep(.q-field__label) {
+      transform: translateY(-30px) scale(0.75);
+    }
+  }
+}
+
+.toggle-auth-btn {
+  color: var(--btn-primary);
+  font-weight: 500;
+  padding: 0 0.5rem;
+  min-height: unset;
+
+  &:hover {
+    color: #d62f3a;
+    background: transparent;
+  }
+}
+
+.btn-primary {
+  font-weight: 500;
+  padding: 0.75rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #d62f3a;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .dialog-container {
+    margin: 1rem;
+  }
+
+  .dialog-section,
+  .form-section {
+    padding: 1rem;
+  }
+
+  .auth-form {
+    .modern-input {
+      :deep(.q-field__control) {
+        height: 48px;
+      }
+    }
+  }
 }
 </style>

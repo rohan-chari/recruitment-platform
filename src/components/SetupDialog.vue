@@ -56,7 +56,7 @@
           </div>
           <div class="col-12 col-md-8 q-pa-md">
             <div v-if="activeSetupNav === 'Email Verification'">
-              <q-card-section class="q-pa-sm dialog-section" align="center">
+              <q-card-section class="q-pa-sm q-mb-sm dialog-section" align="center">
                 <h2 class="primary-color no-margin">Account Setup</h2>
                 <h6 class="secondary-color no-margin">
                   Let's get started by verifying your email address.
@@ -280,14 +280,15 @@
               <div class="row justify-between">
                 <q-btn
                   flat
-                  color="primary"
+                  :ripple="false"
+                  class="navigation-btn back-btn"
                   label="Back"
                   icon="arrow_back"
                   @click="goToPreviousStep"
                   :disable="activeSetupNav === 'Email Verification'"
                 />
                 <q-btn
-                  color="primary"
+                  class="navigation-btn next-btn btn-primary"
                   label="Next"
                   icon-right="arrow_forward"
                   @click="goToNextStep"
@@ -718,7 +719,7 @@ export default {
   },
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .disabled-email-input {
   width: fit-content;
 }
@@ -734,48 +735,194 @@ export default {
 .dialog-container {
   width: 100%;
   max-width: 1100px;
+  border-radius: 16px;
+  background: #ffffff;
 }
 
-@media (min-width: 600px) {
-  .dialog-container {
-    min-height: 400px;
+.dialog-section {
+  padding: 1.5rem;
+
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h6 {
+    font-size: 1rem;
+    line-height: 1.5;
   }
 }
+
 .setup-nav-bar {
   align-items: center;
-  border-radius: 15px;
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    cursor: pointer;
+    background-color: rgba(233, 99, 108, 0.1);
+  }
+
+  &.active-setup-nav {
+    background-color: rgba(233, 99, 108, 0.15);
+    border-left: 4px solid var(--btn-primary);
+  }
 }
-.setup-nav-bar:hover {
-  cursor: pointer;
-  background-color: rgb(219, 219, 219);
-}
+
 .circle-num {
   width: 2.5rem;
   height: 2.5rem;
   line-height: 2.5rem;
   text-align: center;
   border-radius: 50%;
-  border: 2px solid #000;
+  border: 2px solid var(--btn-primary);
+  color: var(--btn-primary);
   display: inline-block;
   font-size: 1.5rem;
+  margin-right: 1rem;
 }
-.active-setup-nav {
-  background-color: rgb(219, 219, 219);
+
+.checkbox {
+  font-size: 2.5rem;
+  color: #21ba45;
+  margin-right: 1rem;
 }
-.upload-image-btn {
-  border-radius: 150px !important;
+
+.verification-box {
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  border-radius: 8px;
+  border: 2px solid rgba(233, 99, 108, 0.3);
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    border-color: var(--btn-primary);
+  }
 }
+
+.verify-email-row {
+  gap: 1.75rem;
+  margin: 2rem 0;
+}
+
 .profile-picture {
   width: 250px;
   height: 250px;
   border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid rgba(233, 99, 108, 0.1);
 }
+
+.q-chip {
+  background-color: rgba(233, 99, 108, 0.1);
+  color: var(--btn-primary);
+  border: 1px solid rgba(233, 99, 108, 0.2);
+
+  &:hover {
+    background-color: rgba(233, 99, 108, 0.15);
+  }
+}
+
+.q-input {
+  margin-bottom: 1rem;
+
+  :deep(.q-field__control) {
+    border-radius: 8px;
+    border: 2px solid rgba(75, 75, 75, 0.1);
+    transition: border-color 0.2s ease;
+
+    &:hover {
+      border-color: rgba(233, 99, 108, 0.3);
+    }
+
+    &.q-field__control--focused {
+      border-color: var(--btn-primary);
+    }
+  }
+}
+
+.btn-primary {
+  font-weight: 500;
+  padding: 0.5rem 2rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #d62f3a;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
 .text-subtitle1 {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 1rem;
+  margin: 0.5rem 0;
 }
 
 .text-weight-bold {
   font-weight: 600;
+  color: var(--text-primary);
+}
+
+@media (max-width: 600px) {
+  .dialog-container {
+    margin: 0;
+    border-radius: 0;
+    min-height: 100vh;
+  }
+
+  .dialog-section {
+    padding: 1rem;
+  }
+
+  .verify-email-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .profile-picture {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+.navigation-btn {
+  min-width: 120px;
+  padding: 8px 24px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  &.back-btn {
+    color: var(--text-secondary);
+    background: transparent;
+    border: 2px solid rgba(75, 75, 75, 0.15);
+
+    &:hover:not(:disabled) {
+      background-color: rgba(233, 99, 108, 0.15);
+      border-color: rgba(75, 75, 75, 0.25);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &.next-btn {
+    color: white;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: var(--btn-primary);
+    }
+  }
 }
 </style>

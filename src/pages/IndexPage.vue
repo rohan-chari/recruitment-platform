@@ -1,253 +1,168 @@
 <template>
-  <q-page class="flex primary-background-color justify-center">
-    <div class="cta-container-full q-mb-lg row">
-      <div class="cta">
-        <div class="row">
-          <div class="col-12 primary-color row justify-center">
-            <h2 class="no-margin">People know you're great.</h2>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-12 primary-color row q-mb-md justify-center">
-            <h2 class="no-margin">Show it.</h2>
-          </div>
-        </div>
-        <div class="row q-my-lg">
-          <h6 class="no-margin cta-caption secondary-color">
+  <q-page class="landing-page">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="container">
+        <div class="hero-content">
+          <h1 class="text-h2 text-weight-medium primary-color q-mb-sm">
+            People know you're great.
+          </h1>
+          <h1 class="text-h2 text-weight-medium primary-color q-mb-lg">Show it.</h1>
+          <p class="text-subtitle1 text-grey-7 q-mb-xl">
             Applying for a job, grad school, or housing? VouchForMe helps you collect and access
             your references in one place—so you're always ready to prove your credibility.
-          </h6>
+          </p>
+          <div class="row q-col-gutter-md q-mb-md justify-center">
+            <div class="col-auto">
+              <q-btn label="Join Our Waitlist" class="btn-primary" @click="handleJoinWaitlist" />
+            </div>
+            <div class="col-auto">
+              <q-btn
+                label="Get Started (TEMPORARY)"
+                class="btn-secondary"
+                @click="handleGetStarted"
+              />
+            </div>
+            <div class="col-auto">
+              <q-btn label="Learn More" class="btn-secondary" @click="goToLearnMoreSection" />
+            </div>
+          </div>
+          <p v-if="waitlistCount > 0" class="text-subtitle1 text-grey-7 q-mt-md">
+            {{ waitlistCount }} members are in. Join now!
+          </p>
         </div>
-        <div class="cta-action-buttons row q-mt-lg">
-          <q-btn
-            label="Join Our Waitlist"
-            size="1.3rem"
-            @click="handleJoinWaitlist"
-            rounded
-            class="btn-primary"
-          />
-
-          <q-btn
-            label="Get Started (TEMPORARY)"
-            size="1rem"
-            @click="handleGetStarted"
-            rounded
-            color="black"
-          />
-
-          <q-btn
-            label="Learn More"
-            size="1.3rem"
-            @click="goToLearnMoreSection"
-            rounded
-            class="btn-primary"
-          />
-        </div>
-        <div v-if="waitlistCount > 0" class="row q-ml-sm">
-          <p class="no-margin secondary-color">{{ waitlistCount }} members are in. Join now!</p>
+        <div class="hero-image q-mt-xl">
+          <img alt="Text with recruiter" src="~assets/cta-image.jpg" />
         </div>
       </div>
-    </div>
-    <div class="row q-mt-lg">
-      <img alt="Text with recruiter" class="cta-image" src="~assets/cta-image.jpg" width="1100" />
-    </div>
-  </q-page>
-  <q-separator />
-  <q-page class="secondary-gray-container q-pb-lg">
-    <div class="learn-more-container">
-      <div class="row">
-        <div id="learnMoreSection" class="col-sm-12 col-md-12 q-pl-xl">
-          <div class="row justify-center">
-            <h2 class="primary-color">How it works</h2>
+    </section>
+
+    <q-separator />
+
+    <!-- How it Works Section -->
+    <section id="learnMoreSection" class="how-it-works-section">
+      <div class="container">
+        <h2 class="text-h3 text-weight-medium text-center primary-color q-mb-xl">How it works</h2>
+        <div class="row q-col-gutter-xl justify-center">
+          <div class="col-12 col-md-3">
+            <div class="feature-card">
+              <q-icon name="mail" class="feature-icon" />
+              <h4 class="text-h5 text-weight-medium q-my-md">Request</h4>
+              <p class="text-subtitle1 text-grey-7">Invite someone to vouch for you</p>
+            </div>
           </div>
-          <div class="row">
-            <div class="col-sm-12 col-md-3">
-              <div class="row justify-center align-center">
-                <q-icon name="mail" class="primary-icon-styling" />
-              </div>
-              <div class="row justify-center align-center">
-                <h4 class="secondary-color">Request</h4>
-              </div>
-              <div class="row justify-center">
-                <h5 class="secondary-color no-margin">Invite someone to vouch for you</h5>
-              </div>
+          <div class="col-auto self-center" v-if="!$q.screen.lt.md">
+            <q-icon name="trending_flat" class="arrow-icon" />
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="feature-card">
+              <q-icon name="folder_open" class="feature-icon" />
+              <h4 class="text-h5 text-weight-medium q-my-md">Organize</h4>
+              <p class="text-subtitle1 text-grey-7">Tag, store, and categorize by use case</p>
             </div>
-            <div class="col-1 align-center" v-if="!$q.screen.lt.md">
-              <q-icon class="secondary-icon-styling" name="trending_flat" />
-            </div>
-            <div class="col-sm-12 col-md-3">
-              <div class="row justify-center align-center">
-                <q-icon name="folder_open" class="primary-icon-styling" />
-              </div>
-              <div class="row justify-center align-center">
-                <h4 class="secondary-color">Organize</h4>
-              </div>
-              <div class="row justify-center">
-                <h5 class="secondary-color no-margin">Tag, store, and categorize by use case</h5>
-              </div>
-            </div>
-            <div class="col-1 align-center" v-if="!$q.screen.lt.md">
-              <q-icon class="secondary-icon-styling" name="trending_flat" />
-            </div>
-            <div class="col-sm-12 col-md-3">
-              <div class="row justify-center align-center">
-                <q-icon name="cloud_upload" class="primary-icon-styling" />
-              </div>
-              <div class="row justify-center align-center">
-                <h4 class="secondary-color">Share</h4>
-              </div>
-              <div class="row justify-center">
-                <h5 class="secondary-color no-margin">Send a personalized vouched portfolio</h5>
-              </div>
+          </div>
+          <div class="col-auto self-center" v-if="!$q.screen.lt.md">
+            <q-icon name="trending_flat" class="arrow-icon" />
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="feature-card">
+              <q-icon name="cloud_upload" class="feature-icon" />
+              <h4 class="text-h5 text-weight-medium q-my-md">Share</h4>
+              <p class="text-subtitle1 text-grey-7">Send a personalized vouched portfolio</p>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </q-page>
-  <q-separator />
-  <!--
-<q-page class="flex primary-background-color">
-    <div class="learn-more-container">
-      <div class="row">
-        <div class="col-sm-12 col-md-7 q-pl-xl">
-          <div class="row">
-            <h2>Tired of chasing recommendations?</h2>
-          </div>
-          <div class="row">
-            <h4 class="secondary-color">
-              Whether you're applying for jobs, grad school, internships, or housing- you're
-              constantly asked for references. VouchForMe makes it easy to collect, store, and share
-              them anytime.
-            </h4>
-          </div>
-        </div>
-        <div class="col-sm-12 col-md-4 learn-more-questions">
-          <div class="row learn-more-question-row">
-            <q-icon name="mail" size="2.5rem" />
-            <h4>Lost in inbox threads?</h4>
-          </div>
-          <div class="row learn-more-question-row">
-            <q-icon name="timer" size="2.5rem" />
-            <h4>Takes too much time?</h4>
-          </div>
-          <div class="row learn-more-question-row">
-            <q-icon name="groups" size="2.5rem" />
-            <h4>Not sure who to ask?</h4>
-          </div>
-        </div>
-      </div>
-    </div>
-  </q-page>
+    </section>
 
-  -->
+    <q-separator />
 
-  <q-page class="secondary-gray-container q-pb-lg">
-    <div class="learn-more-container q-pa-md">
-      <div class="row justify-center q-mb-md">
-        <h2 class="primary-color text-center">One tool. Endless use cases.</h2>
-      </div>
-
-      <div class="row q-col-gutter-sm justify-center">
-        <q-card class="col-12 col-sm-6 col-md-3 use-cases-card">
-          <q-card-section>
-            <q-icon name="school" class="primary-icon-styling" />
-          </q-card-section>
-          <q-card-section>
-            <h4 class="no-margin">Students & Grads</h4>
-            <h5 class="secondary-color no-margin">College apps, internships, scholarships</h5>
-          </q-card-section>
-        </q-card>
-
-        <q-card class="col-12 col-sm-6 col-md-3 use-cases-card">
-          <q-card-section>
-            <q-icon name="business_center" class="primary-icon-styling" />
-          </q-card-section>
-          <q-card-section>
-            <h4 class="no-margin">Professionals</h4>
-            <h5 class="secondary-color no-margin">Job changes, career pivots</h5>
-          </q-card-section>
-        </q-card>
-
-        <q-card class="col-12 col-sm-6 col-md-3 use-cases-card">
-          <q-card-section>
-            <q-icon name="construction" class="primary-icon-styling" />
-          </q-card-section>
-          <q-card-section>
-            <h4 class="no-margin">Freelancers</h4>
-            <h5 class="secondary-color no-margin">Show client testimonials</h5>
-          </q-card-section>
-        </q-card>
-
-        <q-card class="col-12 col-sm-6 col-md-3 use-cases-card">
-          <q-card-section>
-            <q-icon name="home" class="primary-icon-styling" />
-          </q-card-section>
-          <q-card-section>
-            <h4 class="no-margin">Renters</h4>
-            <h5 class="secondary-color no-margin">Secure housing with trusted references</h5>
-          </q-card-section>
-        </q-card>
-      </div>
-    </div>
-  </q-page>
-
-  <q-separator />
-  <q-page class="primary-background-color q-pb-lg">
-    <div class="learn-more-container">
-      <div class="row">
-        <div class="col-sm-12 col-md-12 q-pl-xl">
-          <div class="row justify-center">
-            <h2 class="primary-color">Start building your reference vault today.</h2>
+    <!-- Use Cases Section -->
+    <section class="use-cases-section">
+      <div class="container">
+        <h2 class="text-h3 text-weight-medium text-center primary-color q-mb-xl">
+          One tool. Endless use cases.
+        </h2>
+        <div class="row q-col-gutter-lg justify-center">
+          <div class="col-12 col-sm-6 col-md-3">
+            <q-card class="use-case-card">
+              <q-card-section>
+                <q-icon name="school" class="use-case-icon" />
+                <h4 class="text-h5 text-weight-medium q-my-md">Students & Grads</h4>
+                <p class="text-subtitle1 text-grey-7">College apps, internships, scholarships</p>
+              </q-card-section>
+            </q-card>
           </div>
-          <div class="row">
-            <h5 class="no-margin">
-              "Ellie handled a client escalation during the AWS outage like a pro. Saved a $400K
-              contract."
-            </h5>
+          <div class="col-12 col-sm-6 col-md-3">
+            <q-card class="use-case-card">
+              <q-card-section>
+                <q-icon name="business_center" class="use-case-icon" />
+                <h4 class="text-h5 text-weight-medium q-my-md">Professionals</h4>
+                <p class="text-subtitle1 text-grey-7">Job changes, career pivots</p>
+              </q-card-section>
+            </q-card>
           </div>
-          <div class="row">
-            <h6 class="secondary-color">— Steve R., VP of Client Success at Twilio</h6>
+          <div class="col-12 col-sm-6 col-md-3">
+            <q-card class="use-case-card">
+              <q-card-section>
+                <q-icon name="construction" class="use-case-icon" />
+                <h4 class="text-h5 text-weight-medium q-my-md">Freelancers</h4>
+                <p class="text-subtitle1 text-grey-7">Show client testimonials</p>
+              </q-card-section>
+            </q-card>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3">
+            <q-card class="use-case-card">
+              <q-card-section>
+                <q-icon name="home" class="use-case-icon" />
+                <h4 class="text-h5 text-weight-medium q-my-md">Renters</h4>
+                <p class="text-subtitle1 text-grey-7">Secure housing with trusted references</p>
+              </q-card-section>
+            </q-card>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   </q-page>
+
+  <!-- Waitlist Dialog -->
   <q-dialog v-model="emailWaitlistWindow">
-    <q-card class="email-waitlist-container">
+    <q-card class="dialog-container">
       <q-card-section align="right">
         <q-icon flat name="close" class="close-btn" @click="emailWaitlistWindow = false" />
       </q-card-section>
-      <q-card-section class="q-pt-none dialog-section" align="center">
-        <h2 class="primary-color no-margin">Join our waitlist.</h2>
-        <h6 class="secondary-color no-margin">
+
+      <q-card-section class="dialog-section" align="center">
+        <h2 class="text-h4 text-weight-medium primary-color q-mb-sm">Join our waitlist.</h2>
+        <h6 class="text-subtitle1 text-grey-7 q-ma-none">
           Enter your email and get notified as soon as we go live!
         </h6>
       </q-card-section>
-      <q-card-section>
-        <q-form @submit.prevent="addUserToWaitList">
-          <div class="row join-waitlist-form q-mb-sm">
-            <q-input
-              class="col-8"
-              id="waitlistEmail"
-              v-model="waitlistEmail"
-              rounded
-              outlined
-              label="Email"
-            ></q-input>
-            <q-btn rounded color="black" label="Join Waitlist" size="1.1rem" type="submit" />
-          </div>
-          <div v-if="emptyEmailError" class="row q-pl-md error-message">
-            <h6 class="no-margin">Please enter a valid email.</h6>
-          </div>
-          <div v-if="waitListEmailExistsError" class="row q-pl-md error-message">
-            <h6 class="no-margin">This email is already on the waitlist.</h6>
+
+      <q-card-section class="form-section">
+        <q-form @submit.prevent="addUserToWaitList" class="waitlist-form">
+          <div class="row q-col-gutter-md">
+            <div class="col-12">
+              <q-input
+                id="waitlistEmail"
+                v-model="waitlistEmail"
+                class="modern-input"
+                outlined
+                label="Email"
+                :error="emptyEmailError || waitListEmailExistsError"
+                :error-message="getErrorMessage"
+              />
+            </div>
+            <div class="col-12">
+              <q-btn class="full-width btn-primary" label="Join Waitlist" type="submit" />
+            </div>
           </div>
         </q-form>
       </q-card-section>
     </q-card>
   </q-dialog>
-  <RegistrationDialog v-model="showDialog" />
+
+  <RegistrationDialog v-model="showRegistrationDialog" />
 </template>
 
 <script>
@@ -263,7 +178,7 @@ export default {
     RegistrationDialog,
   },
   setup() {
-    const showDialog = ref(false)
+    const showRegistrationDialog = ref(false)
     const userStore = useAuthStore()
     const router = useRouter()
     const $q = useQuasar()
@@ -281,7 +196,7 @@ export default {
       if (userObject.value) {
         router.push('/home')
       } else {
-        showDialog.value = true
+        showRegistrationDialog.value = true
       }
     }
 
@@ -327,12 +242,18 @@ export default {
       document.getElementById('learnMoreSection').scrollIntoView({ behavior: 'smooth' })
     }
 
+    const getErrorMessage = computed(() => {
+      if (emptyEmailError.value) return 'Please enter a valid email.'
+      if (waitListEmailExistsError.value) return 'This email is already on the waitlist.'
+      return ''
+    })
+
     onMounted(() => {
       getWaitlistCount()
     })
 
     return {
-      showDialog,
+      showRegistrationDialog,
       userObject,
       handleGetStarted,
       emailWaitlistWindow,
@@ -343,113 +264,237 @@ export default {
       waitListEmailExistsError,
       goToLearnMoreSection,
       waitlistCount,
+      getErrorMessage,
     }
   },
 }
 </script>
-<style scoped>
-.cta {
-  margin-top: 3rem;
-  padding: 0 1rem;
-  align-items: center;
-  text-align: center;
-}
-.cta-image {
-  border-radius: 25px;
-}
-.cta-container-full {
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  width: 100%;
+
+<style lang="scss" scoped>
+.landing-page {
+  background-color: #ffffff;
 }
 
-.cta-action-buttons {
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 1rem;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
 }
 
-@media (max-width: 768px) {
-  .cta-action-buttons {
-    flex-direction: column;
-    align-items: center;
-  }
-}
+// Hero Section
+.hero-section {
+  background-color: #f8f9fa;
 
-.email-waitlist-container {
-  width: 100%;
-}
-.join-waitlist-form {
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-}
-.learn-more-container {
-  padding: 1rem;
-}
-.learn-more-questions {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-.learn-more-question-row {
-  gap: 1rem;
-  align-items: center;
-}
-.use-cases-card {
-  flex-direction: column;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-.use-cases-container {
-  gap: 2rem;
-  justify-content: space-around;
-}
-.cta-caption {
-  max-width: 800px;
-  width: 100%;
-  padding: 0 1rem;
-}
-@media (max-width: 768px) {
-  .cta-container-full {
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
+  .hero-content {
+    max-width: 800px;
+    margin: 0 auto;
     text-align: center;
   }
 
-  .cta-caption {
-    width: 90%;
+  .hero-image {
+    max-width: 1100px;
+    margin: 0 auto;
+
+    img {
+      width: 100%;
+      height: auto;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+// How it Works Section
+.how-it-works-section {
+  background-color: #ffffff;
+
+  .feature-card {
+    text-align: center;
+    padding: 2rem;
+    border-radius: 16px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+    }
   }
 
-  .cta-image {
+  .feature-icon {
+    font-size: 3.5rem;
+    color: var(--btn-primary);
+  }
+
+  .arrow-icon {
+    font-size: 2rem;
+    color: var(--text-secondary);
+    opacity: 0.5;
+  }
+}
+
+// Use Cases Section
+.use-cases-section {
+  background-color: #f8f9fa;
+
+  .use-case-card {
+    height: 100%;
+    border-radius: 16px;
+    border: 1px solid rgba(233, 99, 108, 0.1);
+    transition: all 0.2s ease;
+    text-align: center;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .use-case-icon {
+    font-size: 3rem;
+    color: var(--btn-primary);
+  }
+}
+
+// Buttons
+.btn-primary {
+  font-weight: 500;
+  padding: 0.75rem 2rem;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #d62f3a;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-secondary {
+  font-weight: 500;
+  padding: 0.75rem 2rem;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--btn-primary);
+  border: 2px solid var(--btn-primary);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(233, 99, 108, 0.1);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Dialog Styles
+.dialog-container {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.dialog-section {
+  padding: 1.5rem 2rem;
+}
+
+.form-section {
+  padding: 0 2rem 2rem;
+}
+
+.close-btn {
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: var(--btn-primary);
+    transform: scale(1.1);
+  }
+}
+
+.waitlist-form {
+  .modern-input {
+    :deep(.q-field__control) {
+      height: 56px;
+      border-radius: 8px;
+      background: #f8f9fa;
+
+      &:hover {
+        border-color: rgba(233, 99, 108, 0.3);
+      }
+
+      &.q-field__control--focused {
+        border-color: var(--btn-primary);
+        background: #ffffff;
+      }
+    }
+
+    :deep(.q-field__label) {
+      top: 18px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    &.q-field--float :deep(.q-field__label) {
+      transform: translateY(-30px) scale(0.75);
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 2rem 1rem;
+  }
+
+  .hero-section {
+    .hero-content {
+      h1 {
+        font-size: 2rem;
+      }
+    }
+  }
+
+  .how-it-works-section {
+    .feature-card {
+      margin-bottom: 2rem;
+    }
+  }
+
+  .use-cases-section {
+    .use-case-card {
+      margin-bottom: 1rem;
+    }
+  }
+
+  .btn-primary,
+  .btn-secondary {
     width: 100%;
-    height: auto;
+    margin-bottom: 1rem;
   }
 
-  .join-waitlist-form {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: center;
+  .dialog-container {
+    margin: 1rem;
   }
 
-  .join-waitlist-form .q-input,
-  .join-waitlist-form .q-btn {
-    width: 90%;
+  .dialog-section,
+  .form-section {
+    padding: 1rem;
   }
 
-  .use-cases-container {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .use-cases-card {
-    width: 100%;
-    margin-bottom: 1.5rem;
+  .waitlist-form {
+    .modern-input {
+      :deep(.q-field__control) {
+        height: 48px;
+      }
+    }
   }
 }
 </style>
