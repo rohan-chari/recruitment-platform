@@ -56,12 +56,13 @@
           </div>
           <div class="col-12 col-md-8 q-pa-md">
             <div v-if="activeSetupNav === 'Email Verification'">
-              <q-card-section class="q-pa-sm q-mb-sm dialog-section" align="center">
-                <h2 class="primary-color no-margin">Account Setup</h2>
-                <h6 class="secondary-color no-margin">
-                  Let's get started by verifying your email address.
-                </h6>
-              </q-card-section>
+              <q-card class="q-pa-md q-mb-md" flat>
+              <q-card-section class="q-pa-sm q-mb-sm dialog-section text-center">
+                  <h2 class="primary-color no-margin">Account Setup</h2>
+                  <h6 class="secondary-color no-margin">
+                    Let's get started by verifying your email address.
+                  </h6>
+                </q-card-section>
 
               <q-card-section class="q-pa-sm dialog-section" align="center">
                 <h6 class="primary-color no-margin">We'll send a verification link to:</h6>
@@ -340,7 +341,8 @@ export default {
       () =>
         userDbObject.value?.firstName &&
         userDbObject.value?.lastName &&
-        userDbObject.value?.profilePictureUrl,
+        userDbObject.value?.profilePictureUrl &&
+        userDbObject.value?.userBio,
     )
 
     const activeSetupNav = ref('Email Verification')
@@ -612,6 +614,7 @@ export default {
     const saveUserProfile = debounce(async () => {
       try {
         await axios.patch('https://vouchforme.org/api/user/update-user', userDbObject.value)
+        await userStore.fetchUserFromDb()
       } catch (err) {
         console.error('Save failed:', err)
         $q.notify({
