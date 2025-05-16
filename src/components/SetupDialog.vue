@@ -139,7 +139,7 @@
                     label="First Name"
                   ></q-input>
                   <q-input
-                    v-model="userDbObject.middleName"
+                    v-model="userDbObject.middleInitial"
                     outlined
                     rounded
                     class="col-12 col-md-6"
@@ -644,6 +644,15 @@ export default {
     // Watch for changes in user data fields
     watch(
       () => userDbObject.value?.firstName,
+      (newVal) => {
+        if (newVal) {
+          saveUserProfile()
+        }
+      },
+    )
+
+    watch(
+      () => userDbObject.value?.middleInitial,
       (newVal) => {
         if (newVal) {
           saveUserProfile()
