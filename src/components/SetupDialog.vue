@@ -32,7 +32,8 @@
               @click="handleSetupNavStep('Goals & Intentions')"
               :class="{ 'active-setup-nav': activeSetupNav === 'Goals & Intentions' }"
             >
-              <h6 class="circle-num no-margin">3</h6>
+              <h6 v-if="!isGoalsComplete" class="circle-num no-margin">3</h6>
+              <q-icon v-if="isGoalsComplete" class="checkbox" name="task_alt" />
               <h6 class="q-ma-md">Goals & Intentions</h6>
             </div>
             <q-separator />
@@ -41,7 +42,8 @@
               @click="handleSetupNavStep('Occupation')"
               :class="{ 'active-setup-nav': activeSetupNav === 'Occupation' }"
             >
-              <h6 class="circle-num no-margin">4</h6>
+              <h6 v-if="!isOccupationComplete" class="circle-num no-margin">4</h6>
+              <q-icon v-if="isOccupationComplete" class="checkbox" name="task_alt" />
               <h6 class="q-ma-md">Occupation</h6>
             </div>
             <q-separator />
@@ -228,27 +230,123 @@
             <div v-if="activeSetupNav === 'Occupation'">
               <q-card-section class="q-pa-sm dialog-section" align="center">
                 <h2 class="primary-color no-margin">Occupation</h2>
-                <h6 class="secondary-color no-margin">Tell us about your work</h6>
+                <h6 class="secondary-color no-margin">Tell us about your work or studies</h6>
               </q-card-section>
 
               <q-card-section class="q-pa-sm dialog-section">
-                <q-input
-                  v-model="userDbObject.occupation"
+                <q-select
+                  v-model="userDbObject.employmentStatus"
+                  :options="employmentStatusOptions"
                   outlined
-                  label="Current occupation"
+                  label="Current Status"
                   class="q-mb-md"
+                  :rules="[(val) => !!val || 'Please select your current status']"
                 />
-                <q-input
-                  v-model="userDbObject.company"
+
+                <!-- Professional Fields -->
+                <template
+                  v-if="
+                    userDbObject.employmentStatus === 'Employed' ||
+                    userDbObject.employmentStatus === 'Self-Employed/Freelancer'
+                  "
+                >
+                  <q-input
+                    v-model="userDbObject.occupation"
+                    outlined
+                    label="Job Title"
+                    class="q-mb-md"
+                    :rules="[(val) => !!val || 'Job title is required']"
+                  />
+                  <q-input
+                    v-model="userDbObject.company"
+                    outlined
+                    label="Company/Organization"
+                    class="q-mb-md"
+                    :rules="[(val) => !!val || 'Company name is required']"
+                  />
+                  <q-input
+                    v-model="userDbObject.experience"
+                    outlined
+                    type="number"
+                    min="0"
+                    :rules="[(val) => val >= 0 || 'Years must be 0 or greater']"
+                    @update:model-value="
+                      (val) => (userDbObject.experience = val ? parseInt(val) : null)
+                    "
+                    label="Years of Experience"
+                    class="q-mb-md"
+                  />
+                </template>
+
+                <!-- Student Fields -->
+                <template v-if="userDbObject.employmentStatus === 'Student'">
+                  <q-input
+                    v-model="userDbObject.institution"
+                    outlined
+                    label="School/University"
+                    class="q-mb-md"
+                    :rules="[(val) => !!val || 'Institution name is required']"
+                  />
+                  <q-input
+                    v-model="userDbObject.fieldOfStudy"
+                    outlined
+                    label="Field of Study"
+                    class="q-mb-md"
+                    :rules="[(val) => !!val || 'Field of study is required']"
+                  />
+                  <q-select
+                    v-model="userDbObject.educationLevel"
+                    :options="educationLevelOptions"
+                    outlined
+                    label="Education Level"
+                    class="q-mb-md"
+                    :rules="[(val) => !!val || 'Education level is required']"
+                  />
+                  <q-input
+                    v-model="userDbObject.graduationYear"
+                    outlined
+                    type="number"
+                    label="Expected Graduation Year"
+                    class="q-mb-md"
+                    :rules="[
+                      (val) => !!val || 'Graduation year is required',
+                      (val) => val >= new Date().getFullYear() || 'Please enter a future year',
+                    ]"
+                  />
+                </template>
+
+                <!-- Looking for Opportunities -->
+                <template v-if="userDbObject.employmentStatus === 'Looking for Opportunities'">
+                  <q-input
+                    v-model="userDbObject.desiredRole"
+                    outlined
+                    label="Desired Role"
+                    class="q-mb-md"
+                    :rules="[(val) => !!val || 'Desired role is required']"
+                  />
+                  <q-select
+                    v-model="userDbObject.desiredIndustries"
+                    :options="industryOptions"
+                    multiple
+                    outlined
+                    label="Desired Industries"
+                    use-chips
+                    class="q-mb-md"
+                    :rules="[(val) => val.length > 0 || 'Please select at least one industry']"
+                  />
+                </template>
+
+                <!-- Skills Section for All -->
+                <q-select
+                  v-model="userDbObject.skills"
+                  :options="skillOptions"
+                  multiple
                   outlined
-                  label="Company (optional)"
+                  label="Skills"
+                  use-chips
                   class="q-mb-md"
-                />
-                <q-input
-                  v-model="userDbObject.experience"
-                  outlined
-                  type="number"
-                  label="Years of experience"
+                  hint="Select your key skills"
+                  :rules="[(val) => val.length > 0 || 'Please select at least one skill']"
                 />
               </q-card-section>
             </div>
@@ -260,6 +358,7 @@
               </q-card-section>
 
               <q-card-section class="q-pa-sm dialog-section">
+                <!-- Profile Picture and Name -->
                 <div class="row justify-center q-mb-lg">
                   <q-avatar size="150px">
                     <img :src="userDbObject.profilePictureUrl" />
@@ -268,26 +367,76 @@
                 <div class="row q-mb-md">
                   <div class="col-12">
                     <h5 class="no-margin">
-                      {{ userDbObject?.firstName }} {{ userDbObject?.lastName }}
+                      {{ userDbObject?.firstName }}
+                      {{ userDbObject?.middleInitial ? userDbObject?.middleInitial + '.' : '' }}
+                      {{ userDbObject?.lastName }}
                     </h5>
-                    <p class="text-subtitle1">
-                      {{ userDbObject?.occupation }} at {{ userDbObject?.company }}
-                    </p>
+
+                    <!-- Occupation Information -->
+                    <template
+                      v-if="
+                        userDbObject?.employmentStatus === 'Employed' ||
+                        userDbObject?.employmentStatus === 'Self-Employed/Freelancer'
+                      "
+                    >
+                      <p class="text-subtitle1">
+                        {{ userDbObject?.occupation }} at {{ userDbObject?.company }}
+                        <span v-if="userDbObject?.experience" class="text-caption">
+                          • {{ userDbObject?.experience }} years of experience
+                        </span>
+                      </p>
+                    </template>
+
+                    <template v-if="userDbObject?.employmentStatus === 'Student'">
+                      <p class="text-subtitle1">
+                        {{ userDbObject?.fieldOfStudy }} Student at {{ userDbObject?.institution }}
+                        <br />
+                        {{ userDbObject?.educationLevel }} • Class of
+                        {{ userDbObject?.graduationYear }}
+                      </p>
+                    </template>
+
+                    <template v-if="userDbObject?.employmentStatus === 'Looking for Opportunities'">
+                      <p class="text-subtitle1">
+                        Looking for {{ userDbObject?.desiredRole }} opportunities
+                        <br />
+                        Interested in: {{ userDbObject?.desiredIndustries?.join(', ') }}
+                      </p>
+                    </template>
+
+                    <!-- Bio -->
                     <p class="text-body1 q-mt-md">{{ userDbObject?.userBio }}</p>
                   </div>
                 </div>
+
+                <!-- Skills -->
+                <div class="row q-mb-md">
+                  <div class="col-12">
+                    <h6 class="text-weight-bold">Skills</h6>
+                    <q-chip
+                      v-for="skill in userDbObject?.skills"
+                      :key="skill"
+                      class="q-ma-xs skill-chip"
+                    >
+                      {{ skill }}
+                    </q-chip>
+                  </div>
+                </div>
+
+                <!-- Goals -->
                 <div class="row q-mb-md">
                   <div class="col-12">
                     <h6 class="text-weight-bold">Goals</h6>
                     <q-chip
                       v-for="goal in userDbObject?.goals"
                       :key="goal"
-                      color="primary"
-                      text-color="white"
-                      class="q-ma-xs"
+                      class="q-ma-xs goal-chip"
                     >
                       {{ goal }}
                     </q-chip>
+                    <p v-if="userDbObject?.otherGoals" class="text-body2 q-mt-sm">
+                      Additional goals: {{ userDbObject?.otherGoals }}
+                    </p>
                   </div>
                 </div>
               </q-card-section>
@@ -306,11 +455,18 @@
                   :disable="activeSetupNav === 'Email Verification'"
                 />
                 <q-btn
+                  v-if="activeSetupNav !== 'Preview Profile'"
                   class="navigation-btn next-btn btn-primary"
                   label="Next"
                   icon-right="arrow_forward"
                   @click="goToNextStep"
-                  :disable="activeSetupNav === 'Preview Profile'"
+                />
+                <q-btn
+                  v-else
+                  class="navigation-btn btn-primary"
+                  label="Finish Setup"
+                  icon-right="check"
+                  @click="setupDialogModel = false"
                 />
               </div>
             </q-card-section>
@@ -327,6 +483,8 @@ import { useAuthStore } from 'src/stores/auth'
 import { useQuasar } from 'quasar'
 import axios from 'axios'
 import { debounce } from 'lodash'
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { storage } from 'src/firebase'
 
 export default {
   props: {
@@ -361,6 +519,7 @@ export default {
         userDbObject.value?.profilePictureUrl &&
         userDbObject.value?.userBio,
     )
+    const isGoalsComplete = computed(() => userDbObject.value?.goals?.length > 0)
 
     const activeSetupNav = ref('Email Verification')
 
@@ -443,7 +602,6 @@ export default {
     }
 
     const handleSetupNavStep = (step) => {
-      // Prevent navigation to later steps if previous steps are not complete
       if (step === 'Profile Picture & Bio' && !isEmailVerificationComplete.value) {
         $q.notify({
           type: 'warning',
@@ -479,7 +637,6 @@ export default {
       activeSetupNav.value = step
     }
 
-    // Add validation for personal details
     const validatePersonalDetails = () => {
       if (!userDbObject.value?.firstName?.trim()) {
         $q.notify({
@@ -505,19 +662,50 @@ export default {
         return false
       }
 
+      if (!userDbObject.value?.userBio?.trim()) {
+        $q.notify({
+          type: 'negative',
+          message: 'Please enter your bio',
+        })
+        return false
+      }
+
+      if (!userDbObject.value?.goals?.length > 0) {
+        $q.notify({
+          type: 'negative',
+          message: 'Please select at least one goal',
+        })
+        return false
+      }
       return true
     }
 
-    // Add completion status for all steps
-    const isGoalsComplete = computed(() => {
-      return userDbObject.value?.goals?.length > 0
-    })
-
     const isOccupationComplete = computed(() => {
-      return userDbObject.value?.occupation?.trim()
+      if (!userDbObject.value?.employmentStatus) return false
+
+      switch (userDbObject.value.employmentStatus) {
+        case 'Employed':
+        case 'Self-Employed/Freelancer':
+          return !!(userDbObject.value?.occupation && userDbObject.value?.company)
+
+        case 'Student':
+          return !!(
+            userDbObject.value?.institution &&
+            userDbObject.value?.fieldOfStudy &&
+            userDbObject.value?.educationLevel &&
+            userDbObject.value?.graduationYear
+          )
+
+        case 'Looking for Opportunities':
+          return !!(
+            userDbObject.value?.desiredRole && userDbObject.value?.desiredIndustries?.length
+          )
+
+        default:
+          return false
+      }
     })
 
-    // Add navigation buttons
     const goToNextStep = () => {
       const steps = [
         'Email Verification',
@@ -582,34 +770,49 @@ export default {
         // First read the file as data URL for preview
         const reader = new FileReader()
         reader.onload = async (e) => {
+          // Set temporary preview
           userDbObject.value.profilePictureUrl = e.target.result
 
-          // Create form data for upload
-          const formData = new FormData()
-          formData.append('image', file)
-          formData.append('uid', userObject.value.uid)
+          try {
+            // Upload to Firebase Storage
+            const imageRef = storageRef(
+              storage,
+              `profile-pictures/${userObject.value.uid}/${file.name}`,
+            )
+            await uploadBytes(imageRef, file)
+            const downloadURL = await getDownloadURL(imageRef)
 
-          // Upload to server
-          await axios.post('https://vouchforme.org/api/user/upload-profile-picture', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          })
+            // Update the user profile with the Firebase Storage URL
+            await axios.patch('https://vouchforme.org/api/user/update-user', {
+              ...userDbObject.value,
+              profilePictureUrl: downloadURL,
+            })
 
-          $q.notify({
-            type: 'positive',
-            message: 'Profile picture uploaded successfully!',
-          })
+            // Update local state
+            userDbObject.value.profilePictureUrl = downloadURL
 
-          // Refresh user data to get updated profile picture URL
-          await userStore.fetchUserFromDb()
+            $q.notify({
+              type: 'positive',
+              message: 'Profile picture uploaded successfully!',
+            })
+
+            // Refresh user data
+            await userStore.fetchUserFromDb()
+          } catch (error) {
+            console.error('Upload error:', error)
+            $q.notify({
+              type: 'negative',
+              message: 'Failed to upload profile picture. Please try again.',
+            })
+            userDbObject.value.profilePictureUrl = null
+          }
         }
         reader.readAsDataURL(file)
       } catch (err) {
+        console.error('File reading error:', err)
         $q.notify({
           type: 'negative',
-          message:
-            err.response?.data?.message || 'Failed to upload profile picture. Please try again.',
+          message: 'Failed to process the image. Please try again.',
         })
         userDbObject.value.profilePictureUrl = null
       } finally {
@@ -628,10 +831,53 @@ export default {
       'Mentorship opportunities',
     ]
 
+    const employmentStatusOptions = [
+      'Employed',
+      'Self-Employed/Freelancer',
+      'Student',
+      'Looking for Opportunities',
+    ]
+
+    const educationLevelOptions = [
+      'High School',
+      'Associate Degree',
+      "Bachelor's Degree",
+      "Master's Degree",
+      'Doctorate',
+      'Other',
+    ]
+
+    const industryOptions = [
+      'Technology',
+      'Healthcare',
+      'Finance',
+      'Education',
+      'Marketing',
+      'Design',
+      'Engineering',
+      'Sales',
+      'Customer Service',
+      'Other',
+    ]
+
+    const skillOptions = [
+      'Programming',
+      'Data Analysis',
+      'Project Management',
+      'Marketing',
+      'Design',
+      'Communication',
+      'Leadership',
+      'Problem Solving',
+      'Teamwork',
+      'Research',
+      'Writing',
+      'Public Speaking',
+    ]
+
     const saveUserProfile = debounce(async () => {
       try {
         await axios.patch('https://vouchforme.org/api/user/update-user', userDbObject.value)
-        await userStore.fetchUserFromDb()
       } catch (err) {
         console.error('Save failed:', err)
         $q.notify({
@@ -641,86 +887,35 @@ export default {
       }
     }, 1000)
 
-    // Watch for changes in user data fields
     watch(
-      () => userDbObject.value?.firstName,
-      (newVal) => {
-        if (newVal) {
+      () => ({
+        firstName: userDbObject.value?.firstName,
+        middleInitial: userDbObject.value?.middleInitial,
+        lastName: userDbObject.value?.lastName,
+        goals: userDbObject.value?.goals,
+        otherGoals: userDbObject.value?.otherGoals,
+        employmentStatus: userDbObject.value?.employmentStatus,
+        occupation: userDbObject.value?.occupation,
+        company: userDbObject.value?.company,
+        experience: userDbObject.value?.experience,
+        institution: userDbObject.value?.institution,
+        fieldOfStudy: userDbObject.value?.fieldOfStudy,
+        educationLevel: userDbObject.value?.educationLevel,
+        graduationYear: userDbObject.value?.graduationYear,
+        desiredRole: userDbObject.value?.desiredRole,
+        desiredIndustries: userDbObject.value?.desiredIndustries,
+        skills: userDbObject.value?.skills,
+        userBio: userDbObject.value?.userBio,
+      }),
+      (newVal, oldVal) => {
+        if (
+          JSON.stringify(newVal) !== JSON.stringify(oldVal) &&
+          Object.values(newVal).some((val) => val !== undefined)
+        ) {
           saveUserProfile()
         }
       },
-    )
-
-    watch(
-      () => userDbObject.value?.middleInitial,
-      (newVal) => {
-        if (newVal) {
-          saveUserProfile()
-        }
-      },
-    )
-
-    watch(
-      () => userDbObject.value?.lastName,
-      (newVal) => {
-        if (newVal) {
-          saveUserProfile()
-        }
-      },
-    )
-
-    watch(
-      () => userDbObject.value?.goals,
-      (newVal) => {
-        if (newVal) {
-          saveUserProfile()
-        }
-      },
-    )
-
-    watch(
-      () => userDbObject.value?.otherGoals,
-      (newVal) => {
-        if (newVal) {
-          saveUserProfile()
-        }
-      },
-    )
-
-    watch(
-      () => userDbObject.value?.occupation,
-      (newVal) => {
-        if (newVal) {
-          saveUserProfile()
-        }
-      },
-    )
-
-    watch(
-      () => userDbObject.value?.company,
-      (newVal) => {
-        if (newVal) {
-          saveUserProfile()
-        }
-      },
-    )
-
-    watch(
-      () => userDbObject.value?.experience,
-      (newVal) => {
-        if (newVal) {
-          saveUserProfile()
-        }
-      },
-    )
-
-    watch(
-      () => userDbObject.value?.userBio,
-      (newVal) => {
-        if (newVal) {
-          saveUserProfile()
-        }
-      },
+      { deep: true },
     )
 
     return {
@@ -753,6 +948,10 @@ export default {
       goToNextStep,
       goToPreviousStep,
       goalOptions,
+      employmentStatusOptions,
+      educationLevelOptions,
+      industryOptions,
+      skillOptions,
     }
   },
 }
@@ -962,5 +1161,30 @@ export default {
       background: var(--btn-primary);
     }
   }
+}
+
+.goal-chip {
+  background-color: rgba(233, 99, 108, 0.1);
+  color: var(--btn-primary);
+  border: 1px solid rgba(233, 99, 108, 0.2);
+
+  &:hover {
+    background-color: rgba(233, 99, 108, 0.15);
+  }
+}
+
+.skill-chip {
+  background-color: rgba(75, 75, 75, 0.1);
+  color: var(--text-primary);
+  border: 1px solid rgba(75, 75, 75, 0.2);
+
+  &:hover {
+    background-color: rgba(75, 75, 75, 0.15);
+  }
+}
+
+.text-caption {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
 }
 </style>
