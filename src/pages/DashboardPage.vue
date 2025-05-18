@@ -1,52 +1,200 @@
 <template>
   <q-page class="dashboard-page">
-    <div class="dashboard-container">
-      <div class="row items-center justify-between q-mb-xl">
-        <div class="welcome-section">
-          <h2 class="text-h4 text-weight-medium q-ma-none">Welcome back,</h2>
-          <h3 class="text-h5 primary-color q-mt-sm q-mb-none">{{ userObject?.email }}</h3>
-        </div>
-        <q-btn flat class="logout-btn" icon="logout" label="Logout" @click="handleLogout" />
-      </div>
-      <q-card class="setup-card q-pa-md">
-        <q-card-section>
-          <div class="row items-center">
-            <q-icon class="setup-icon q-mr-lg" name="error" />
-            <div class="col-grow">
-              <div class="text-h6 text-weight-medium q-mb-sm">Complete your account setup</div>
-              <div class="text-subtitle1 text-grey-7">
-                Set up your account to start using VouchForMe
+    <div class="container q-pa-md">
+      <!-- Reference Requests Section -->
+      <div class="row q-col-gutter-md">
+        <div class="col-12 col-md-7">
+          <q-card flat bordered class="dashboard-card">
+            <q-card-section>
+              <div class="row items-center justify-between q-mb-md">
+                <div class="text-h6">Your Reference Requests</div>
+                <q-btn color="primary" label="+ New Request" @click="openNewRequestDialog" />
               </div>
-            </div>
-            <div class="col-auto">
-              <q-btn
-                label="Complete Setup"
-                @click="openSetupDialog"
-                class="setup-btn btn-primary"
+              <q-table
+                flat
+                :rows="referenceRequests"
+                :columns="referenceColumns"
+                row-key="email"
+                :pagination="{ rowsPerPage: 5 }"
+                hide-bottom
               />
-            </div>
-          </div>
-        </q-card-section>
-      </q-card>
+            </q-card-section>
+          </q-card>
+
+          <!-- Recent Activity -->
+          <q-card flat bordered class="dashboard-card q-mt-md">
+            <q-card-section>
+              <div class="text-h6 q-mb-md">Recent Activity</div>
+              <div class="activity-list">
+                <div class="activity-item q-mb-sm">
+                  <div class="row items-center justify-between">
+                    <div>You received a new reference from John Doe</div>
+                    <div class="text-caption">Today</div>
+                  </div>
+                </div>
+                <div class="activity-item q-mb-sm">
+                  <div class="row items-center justify-between">
+                    <div>Your reference request to Mary Smith is still pending.</div>
+                    <div class="text-caption">Yesterday, 2:77 PM</div>
+                  </div>
+                </div>
+                <div class="activity-item">
+                  <div class="row items-center justify-between">
+                    <div>3 people viewed your profile this week.</div>
+                    <div class="text-caption">April 3, 2024</div>
+                  </div>
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
+
+          <!-- Reference Templates -->
+          <q-card flat bordered class="dashboard-card q-mt-md">
+            <q-card-section>
+              <div class="text-h6 q-mb-md">Reference Templates</div>
+              <q-select
+                outlined
+                dense
+                v-model="selectedTemplate"
+                :options="['Job Application']"
+                class="q-mb-md"
+              />
+              <q-btn color="primary" label="+ Create Template" />
+            </q-card-section>
+          </q-card>
+        </div>
+
+        <div class="col-12 col-md-5">
+          <!-- At a Glance -->
+          <q-card flat bordered class="dashboard-card">
+            <q-card-section>
+              <div class="text-h6 q-mb-md">At a Glance</div>
+              <div class="row q-col-gutter-md">
+                <div class="col-6">
+                  <div class="text-h3 text-center">5</div>
+                  <div class="text-caption text-center">Total References Collected</div>
+                </div>
+                <div class="col-6">
+                  <div class="text-h3 text-center">37</div>
+                  <div class="text-caption text-center">Profile Views</div>
+                  <div class="text-caption text-center text-grey-7">(Last 30 Days)</div>
+                </div>
+                <div class="col-6">
+                  <div class="text-h3 text-center">1</div>
+                  <div class="text-caption text-center">Requests Pending</div>
+                </div>
+                <div class="col-6">
+                  <div class="text-h3 text-center">27</div>
+                  <div class="text-caption text-center">Total Views</div>
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
+
+          <!-- Profile Link -->
+          <q-card flat bordered class="dashboard-card q-mt-md">
+            <q-card-section>
+              <div class="text-h6 q-mb-md">Shared Profile Link</div>
+              <div class="row items-center q-gutter-sm">
+                <q-input outlined dense readonly class="col" :model-value="profileUrl" />
+                <q-btn flat color="primary" icon="content_copy" @click="shareProfile" />
+              </div>
+            </q-card-section>
+          </q-card>
+
+          <!-- Vouch Links -->
+          <q-card flat bordered class="dashboard-card q-mt-md">
+            <q-card-section>
+              <div class="text-h6 q-mb-md">Your Vouch Links</div>
+              <q-table
+                flat
+                :rows="vouchLinks"
+                :columns="vouchColumns"
+                row-key="label"
+                :pagination="{ rowsPerPage: 5 }"
+                hide-bottom
+              >
+                <template v-slot:body-cell-link="props">
+                  <q-td :props="props">
+                    <q-btn flat color="primary" icon="content_copy" size="sm" />
+                  </q-td>
+                </template>
+              </q-table>
+            </q-card-section>
+          </q-card>
+        </div>
+      </div>
     </div>
   </q-page>
   <SetupDialog v-model="showSetupDialog" />
+  <NewReferenceRequestDialog v-model="showNewRequestDialog" />
 </template>
+
 <script>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from 'src/stores/auth'
+import { useQuasar } from 'quasar'
 import SetupDialog from 'src/components/SetupDialog.vue'
+import NewReferenceRequestDialog from 'src/components/NewReferenceRequestDialog.vue'
 
 export default {
-  components: { SetupDialog },
+  components: { SetupDialog, NewReferenceRequestDialog },
   setup() {
     const userStore = useAuthStore()
     const router = useRouter()
-
+    const $q = useQuasar()
     const showSetupDialog = ref(false)
+    const showNewRequestDialog = ref(false)
+    const selectedTemplate = ref('Job Application')
 
     const userObject = computed(() => userStore.userObject)
+    const userDbObject = computed(() => userStore.userDbObject)
+    const profileUrl = computed(() => `${window.location.origin}/profile/${userObject.value?.uid}`)
+
+    // Mock data
+    const referenceRequests = [
+      {
+        recipient: 'John Doe',
+        email: 'john@example.com',
+        status: 'Pending',
+      },
+      {
+        recipient: 'Mary Smith',
+        email: 'mary@example.com',
+        status: 'Submitted',
+      },
+      {
+        recipient: 'Michael Brown',
+        email: 'michael@example.com',
+        status: 'Declined',
+      },
+    ]
+
+    const referenceColumns = [
+      { name: 'recipient', label: 'Recipient', field: 'recipient', align: 'left' },
+      { name: 'email', label: 'Email', field: 'email', align: 'left' },
+      { name: 'status', label: 'Status', field: 'status', align: 'left' },
+    ]
+
+    const vouchLinks = [
+      {
+        label: 'Summer Internship 2025',
+        link: '',
+        dateCreated: '01/19/2024',
+      },
+      {
+        label: 'General',
+        link: '',
+        dateCreated: '11/05/2023',
+      },
+    ]
+
+    const vouchColumns = [
+      { name: 'label', label: 'Label', field: 'label', align: 'left' },
+      { name: 'link', label: 'Link', field: 'link', align: 'center' },
+      { name: 'dateCreated', label: 'Date Created', field: 'dateCreated', align: 'left' },
+    ]
 
     const handleLogout = () => {
       userStore.logout()
@@ -55,130 +203,165 @@ export default {
 
     const openSetupDialog = () => {
       showSetupDialog.value = true
-      userStore.fetchUserFromDb()
     }
+
+    const shareProfile = () => {
+      navigator.clipboard.writeText(profileUrl.value)
+      $q.notify({
+        type: 'positive',
+        message: 'Profile URL copied to clipboard!',
+      })
+    }
+
+    const openNewRequestDialog = () => {
+      showNewRequestDialog.value = true
+    }
+
+    onMounted(async () => {
+      userStore.fetchUser()
+      const unwatch = watch(
+        () => userStore.userObject,
+        async (newUser) => {
+          if (newUser) {
+            await userStore.fetchUserFromDb()
+            unwatch()
+          }
+        },
+        { immediate: true },
+      )
+    })
 
     return {
       userObject,
+      userDbObject,
       handleLogout,
       showSetupDialog,
       openSetupDialog,
+      shareProfile,
+      profileUrl,
+      referenceRequests,
+      referenceColumns,
+      selectedTemplate,
+      vouchLinks,
+      vouchColumns,
+      showNewRequestDialog,
+      openNewRequestDialog,
     }
   },
 }
 </script>
+
 <style lang="scss" scoped>
 .dashboard-page {
-  background-color: #f8f9fa;
+  background-color: var(--bg-secondary);
   min-height: 100vh;
+  padding: 2rem 0;
 }
 
-.dashboard-container {
+.container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
 }
 
-.welcome-section {
-  h2 {
+.dashboard-card {
+  border-radius: 12px;
+  background: var(--bg-primary);
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+
+  .text-h6 {
     color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
   }
 
-  h3 {
+  .text-h3 {
     color: var(--btn-primary);
+    font-weight: 600;
+  }
+
+  .text-caption {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  :deep(.q-table) {
+    background: transparent;
+
+    th {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    td {
+      color: var(--text-secondary);
+    }
+  }
+
+  :deep(.q-btn) {
+    border-radius: 8px;
+    font-weight: 500;
+
+    &.q-btn--flat:not(.text-primary) {
+      color: var(--text-secondary);
+
+      &:hover {
+        color: var(--text-primary);
+        background: rgba(0, 0, 0, 0.05);
+      }
+    }
+  }
+
+  :deep(.q-field) {
+    .q-field__control {
+      border-radius: 8px;
+      background: white;
+
+      &:hover {
+        border-color: var(--btn-primary);
+      }
+    }
+
+    &.q-field--focused {
+      .q-field__control {
+        border-color: var(--btn-primary);
+        border-width: 2px;
+      }
+    }
   }
 }
 
-.logout-btn {
-  color: var(--text-secondary);
-  font-weight: 500;
-  padding: 0.5rem 1.5rem;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+.activity-list {
+  .activity-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
 
-  &:hover {
-    background-color: rgba(233, 99, 108, 0.1);
-    color: var(--btn-primary);
-  }
+    &:last-child {
+      border-bottom: none;
+    }
 
-  .q-icon {
-    margin-right: 0.5rem;
-  }
-}
-
-.setup-card {
-  background-color: #fff;
-  border-radius: 16px;
-  border: 1px solid rgba(233, 99, 108, 0.15);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
-
-  &:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
-  }
-
-  .setup-icon {
-    font-size: 2.5rem;
-    color: var(--btn-primary);
-  }
-
-  .text-subtitle1 {
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-}
-
-.setup-btn {
-  font-weight: 500;
-  padding: 0.75rem 2rem;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: #d62f3a;
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
+    .text-caption {
+      color: var(--text-secondary);
+    }
   }
 }
 
 @media (max-width: 600px) {
-  .dashboard-container {
-    padding: 1rem;
+  .dashboard-page {
+    padding: 1rem 0;
   }
 
-  .welcome-section {
-    h2 {
-      font-size: 1.5rem;
-    }
-
-    h3 {
-      font-size: 1.25rem;
-    }
+  .container {
+    padding: 0 1rem;
   }
 
-  .setup-card {
-    .row {
-      flex-direction: column;
-      text-align: center;
-      gap: 1rem;
-    }
+  .dashboard-card {
+    margin-bottom: 1rem;
+  }
 
-    .setup-icon {
-      font-size: 2rem;
-      margin-right: 0 !important;
-    }
-
-    .col-auto {
-      width: 100%;
-    }
-
-    .setup-btn {
-      width: 100%;
-    }
+  .text-h3 {
+    font-size: 2rem;
   }
 }
 </style>

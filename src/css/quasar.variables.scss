@@ -24,7 +24,21 @@ $negative: #c10015;
 $info: #31ccec;
 $warning: #f2c037;
 
+// Custom variables
 $text-primary: #e9636c;
 $text-secondary: #4b4b4b;
 $btn-primary: #e33642;
 $btn-accent: #ff9ea5;
+$bg-primary: #ffffff;
+$bg-secondary: #f5f5f5;
+$border-color: rgba(0, 0, 0, 0.12);
+
+:root {
+  --text-primary: #{$text-primary};
+  --text-secondary: #{$text-secondary};
+  --btn-primary: #{$btn-primary};
+  --btn-accent: #{$btn-accent};
+  --bg-primary: #{$bg-primary};
+  --bg-secondary: #{$bg-secondary};
+  --border-color: #{$border-color};
+}
