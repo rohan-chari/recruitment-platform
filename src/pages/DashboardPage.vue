@@ -232,22 +232,7 @@ export default {
     ]
 
     // Mock data for templates
-    const templates = ref([
-      {
-        name: 'Job Application',
-        category: 'Professional Reference',
-        description: 'Standard template for job applications',
-        dateCreated: '2024-01-19',
-        questionsCount: 5,
-      },
-      {
-        name: 'Academic Reference',
-        category: 'Academic Reference',
-        description: 'Template for graduate school applications',
-        dateCreated: '2024-01-15',
-        questionsCount: 7,
-      },
-    ])
+    const templates = ref([])
 
     const templateColumns = [
       { name: 'name', label: 'Name', field: 'name', align: 'left' },
