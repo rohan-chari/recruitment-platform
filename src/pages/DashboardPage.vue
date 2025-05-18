@@ -51,15 +51,43 @@
           <!-- Reference Templates -->
           <q-card flat bordered class="dashboard-card q-mt-md">
             <q-card-section>
-              <div class="text-h6 q-mb-md">Reference Templates</div>
-              <q-select
-                outlined
-                dense
-                v-model="selectedTemplate"
-                :options="['Job Application']"
-                class="q-mb-md"
-              />
-              <q-btn color="primary" label="+ Create Template" />
+              <div class="row items-center justify-between q-mb-md">
+                <div class="text-h6">Reference Templates</div>
+                <q-btn
+                  color="primary"
+                  label="+ Create Template"
+                  @click="openCreateTemplateDialog"
+                />
+              </div>
+              <q-table
+                flat
+                :rows="templates"
+                :columns="templateColumns"
+                row-key="name"
+                :pagination="{ rowsPerPage: 5 }"
+                hide-bottom
+              >
+                <template v-slot:body-cell-actions="props">
+                  <q-td :props="props">
+                    <q-btn
+                      flat
+                      round
+                      color="primary"
+                      icon="edit"
+                      size="sm"
+                      @click="editTemplate(props.row)"
+                    />
+                    <q-btn
+                      flat
+                      round
+                      color="negative"
+                      icon="delete"
+                      size="sm"
+                      @click="deleteTemplate(props.row)"
+                    />
+                  </q-td>
+                </template>
+              </q-table>
             </q-card-section>
           </q-card>
         </div>
@@ -128,6 +156,7 @@
   </q-page>
   <SetupDialog v-model="showSetupDialog" />
   <NewReferenceRequestDialog v-model="showNewRequestDialog" />
+  <CreateTemplateDialog v-model="showCreateTemplateDialog" />
 </template>
 
 <script>
@@ -137,15 +166,21 @@ import { useAuthStore } from 'src/stores/auth'
 import { useQuasar } from 'quasar'
 import SetupDialog from 'src/components/SetupDialog.vue'
 import NewReferenceRequestDialog from 'src/components/NewReferenceRequestDialog.vue'
+import CreateTemplateDialog from 'src/components/CreateTemplateDialog.vue'
 
 export default {
-  components: { SetupDialog, NewReferenceRequestDialog },
+  components: {
+    SetupDialog,
+    NewReferenceRequestDialog,
+    CreateTemplateDialog,
+  },
   setup() {
     const userStore = useAuthStore()
     const router = useRouter()
     const $q = useQuasar()
     const showSetupDialog = ref(false)
     const showNewRequestDialog = ref(false)
+    const showCreateTemplateDialog = ref(false)
     const selectedTemplate = ref('Job Application')
 
     const userObject = computed(() => userStore.userObject)
@@ -196,6 +231,33 @@ export default {
       { name: 'dateCreated', label: 'Date Created', field: 'dateCreated', align: 'left' },
     ]
 
+    // Mock data for templates
+    const templates = ref([
+      {
+        name: 'Job Application',
+        category: 'Professional Reference',
+        description: 'Standard template for job applications',
+        dateCreated: '2024-01-19',
+        questionsCount: 5,
+      },
+      {
+        name: 'Academic Reference',
+        category: 'Academic Reference',
+        description: 'Template for graduate school applications',
+        dateCreated: '2024-01-15',
+        questionsCount: 7,
+      },
+    ])
+
+    const templateColumns = [
+      { name: 'name', label: 'Name', field: 'name', align: 'left' },
+      { name: 'category', label: 'Category', field: 'category', align: 'left' },
+      { name: 'description', label: 'Description', field: 'description', align: 'left' },
+      { name: 'dateCreated', label: 'Created', field: 'dateCreated', align: 'left' },
+      { name: 'questionsCount', label: 'Questions', field: 'questionsCount', align: 'center' },
+      { name: 'actions', label: 'Actions', field: 'actions', align: 'center' },
+    ]
+
     const handleLogout = () => {
       userStore.logout()
       router.push('/')
@@ -215,6 +277,36 @@ export default {
 
     const openNewRequestDialog = () => {
       showNewRequestDialog.value = true
+    }
+
+    const openCreateTemplateDialog = () => {
+      showCreateTemplateDialog.value = true
+    }
+
+    const editTemplate = (template) => {
+      // TODO: Implement template editing
+      console.log('Edit template:', template)
+    }
+
+    const deleteTemplate = async (template) => {
+      try {
+        await $q.dialog({
+          title: 'Confirm Deletion',
+          message: `Are you sure you want to delete the template "${template.name}"?`,
+          cancel: true,
+          persistent: true,
+        })
+
+        // TODO: Implement actual deletion
+        templates.value = templates.value.filter((t) => t.name !== template.name)
+
+        $q.notify({
+          type: 'positive',
+          message: 'Template deleted successfully',
+        })
+      } catch {
+        // User cancelled the deletion
+      }
     }
 
     onMounted(async () => {
@@ -246,6 +338,12 @@ export default {
       vouchColumns,
       showNewRequestDialog,
       openNewRequestDialog,
+      showCreateTemplateDialog,
+      openCreateTemplateDialog,
+      templates,
+      templateColumns,
+      editTemplate,
+      deleteTemplate,
     }
   },
 }
