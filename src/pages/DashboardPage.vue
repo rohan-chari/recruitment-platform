@@ -1,6 +1,10 @@
 <template>
   <q-page class="dashboard-page">
     <div class="container q-pa-md">
+      <q-inner-loading :showing="isLoading">
+        <q-spinner-dots size="50px" color="primary" />
+      </q-inner-loading>
+
       <!-- Reference Requests Section -->
       <div class="row q-col-gutter-md">
         <div class="col-12 col-md-7">
@@ -17,6 +21,7 @@
                 row-key="email"
                 :pagination="{ rowsPerPage: 5 }"
                 hide-bottom
+                :loading="isLoading"
               />
             </q-card-section>
           </q-card>
@@ -26,29 +31,33 @@
             <q-card-section>
               <div class="text-h6 q-mb-md">Recent Activity</div>
               <div class="activity-list">
-                <div class="activity-item q-mb-sm">
-                  <div class="row items-center justify-between">
-                    <div>You received a new reference from John Doe</div>
-                    <div class="text-caption">Today</div>
-                  </div>
+                <div v-if="isLoading" class="text-center q-pa-md">
+                  <q-spinner-dots size="40px" color="primary" />
                 </div>
-                <div class="activity-item q-mb-sm">
-                  <div class="row items-center justify-between">
-                    <div>Your reference request to Mary Smith is still pending.</div>
-                    <div class="text-caption">Yesterday, 2:77 PM</div>
+                <template v-else>
+                  <div class="activity-item q-mb-sm">
+                    <div class="row items-center justify-between">
+                      <div>You received a new reference from John Doe</div>
+                      <div class="text-caption">Today</div>
+                    </div>
                   </div>
-                </div>
-                <div class="activity-item">
-                  <div class="row items-center justify-between">
-                    <div>3 people viewed your profile this week.</div>
-                    <div class="text-caption">April 3, 2024</div>
+                  <div class="activity-item q-mb-sm">
+                    <div class="row items-center justify-between">
+                      <div>Your reference request to Mary Smith is still pending.</div>
+                      <div class="text-caption">Yesterday, 2:77 PM</div>
+                    </div>
                   </div>
-                </div>
+                  <div class="activity-item">
+                    <div class="row items-center justify-between">
+                      <div>3 people viewed your profile this week.</div>
+                      <div class="text-caption">April 3, 2024</div>
+                    </div>
+                  </div>
+                </template>
               </div>
             </q-card-section>
           </q-card>
 
-          <!-- Reference Templates -->
           <q-card flat bordered class="dashboard-card q-mt-md">
             <q-card-section>
               <div class="row items-center justify-between q-mb-md">
@@ -66,6 +75,7 @@
                 row-key="name"
                 :pagination="{ rowsPerPage: 5 }"
                 hide-bottom
+                :loading="isLoading"
               >
                 <template v-slot:body-cell-actions="props">
                   <q-td :props="props">
@@ -97,7 +107,10 @@
           <q-card flat bordered class="dashboard-card">
             <q-card-section>
               <div class="text-h6 q-mb-md">At a Glance</div>
-              <div class="row q-col-gutter-md">
+              <div v-if="isLoading" class="text-center q-pa-md">
+                <q-spinner-dots size="40px" color="primary" />
+              </div>
+              <div v-else class="row q-col-gutter-md">
                 <div class="col-6">
                   <div class="text-h3 text-center">5</div>
                   <div class="text-caption text-center">Total References Collected</div>
@@ -141,6 +154,7 @@
                 row-key="label"
                 :pagination="{ rowsPerPage: 5 }"
                 hide-bottom
+                :loading="isLoading"
               >
                 <template v-slot:body-cell-link="props">
                   <q-td :props="props">
@@ -155,8 +169,8 @@
     </div>
   </q-page>
   <SetupDialog v-model="showSetupDialog" />
-  <NewReferenceRequestDialog v-model="showNewRequestDialog" />
-  <CreateTemplateDialog v-model="showCreateTemplateDialog" />
+  <NewReferenceRequestDialog :templates="templates" v-model="showNewRequestDialog" />
+  <CreateTemplateDialog v-model="showCreateTemplateDialog" @template-saved="handleTemplateSaved" />
 </template>
 
 <script>
@@ -167,6 +181,7 @@ import { useQuasar } from 'quasar'
 import SetupDialog from 'src/components/SetupDialog.vue'
 import NewReferenceRequestDialog from 'src/components/NewReferenceRequestDialog.vue'
 import CreateTemplateDialog from 'src/components/CreateTemplateDialog.vue'
+import axios from 'axios'
 
 export default {
   components: {
@@ -182,13 +197,26 @@ export default {
     const showNewRequestDialog = ref(false)
     const showCreateTemplateDialog = ref(false)
     const selectedTemplate = ref('Job Application')
+    const isLoading = ref(true)
 
     const userObject = computed(() => userStore.userObject)
     const userDbObject = computed(() => userStore.userDbObject)
     const profileUrl = computed(() => `${window.location.origin}/profile/${userObject.value?.uid}`)
 
+    const hasCompletedSetup = computed(() => {
+      if (!userDbObject.value) return false
+      return (
+        userDbObject.value.firstName &&
+        userDbObject.value.lastName &&
+        userDbObject.value.profilePictureUrl &&
+        userDbObject.value.userBio &&
+        userDbObject.value.goals?.length > 0 &&
+        userDbObject.value.skills?.length > 0
+      )
+    })
+
     // Mock data
-    const referenceRequests = [
+    const referenceRequests = ref([
       {
         recipient: 'John Doe',
         email: 'john@example.com',
@@ -204,7 +232,7 @@ export default {
         email: 'michael@example.com',
         status: 'Declined',
       },
-    ]
+    ])
 
     const referenceColumns = [
       { name: 'recipient', label: 'Recipient', field: 'recipient', align: 'left' },
@@ -212,7 +240,7 @@ export default {
       { name: 'status', label: 'Status', field: 'status', align: 'left' },
     ]
 
-    const vouchLinks = [
+    const vouchLinks = ref([
       {
         label: 'Summer Internship 2025',
         link: '',
@@ -223,7 +251,7 @@ export default {
         link: '',
         dateCreated: '11/05/2023',
       },
-    ]
+    ])
 
     const vouchColumns = [
       { name: 'label', label: 'Label', field: 'label', align: 'left' },
@@ -238,14 +266,57 @@ export default {
       { name: 'name', label: 'Name', field: 'name', align: 'left' },
       { name: 'category', label: 'Category', field: 'category', align: 'left' },
       { name: 'description', label: 'Description', field: 'description', align: 'left' },
-      { name: 'dateCreated', label: 'Created', field: 'dateCreated', align: 'left' },
-      { name: 'questionsCount', label: 'Questions', field: 'questionsCount', align: 'center' },
+      {
+        name: 'createdAt',
+        label: 'Created',
+        field: 'createdAt',
+        align: 'left',
+        format: (val) => new Date(val).toLocaleDateString(),
+      },
+      {
+        name: 'questionsCount',
+        label: 'Questions',
+        field: (row) => row.questions?.length || 0,
+        align: 'center',
+      },
       { name: 'actions', label: 'Actions', field: 'actions', align: 'center' },
     ]
 
-    const handleLogout = () => {
-      userStore.logout()
-      router.push('/')
+    const fetchTemplates = async () => {
+      if (!userObject.value?.uid) return
+
+      try {
+        const response = await axios.get(
+          `https://vouchforme.org/api/templates/${userObject.value.uid}`,
+        )
+        templates.value = response.data.map((template) => ({
+          ...template,
+          questionsCount: template.questions?.length || 0,
+        }))
+      } catch (err) {
+        console.error('Failed to fetch templates:', err)
+        $q.notify({
+          type: 'negative',
+          message: 'Failed to load templates. Please try again.',
+        })
+      }
+    }
+
+    const handleTemplateSaved = async () => {
+      await fetchTemplates()
+    }
+
+    const handleLogout = async () => {
+      try {
+        await userStore.logout()
+        router.push('/')
+      } catch (err) {
+        console.error('Logout error:', err)
+        $q.notify({
+          type: 'negative',
+          message: 'Failed to logout. Please try again.',
+        })
+      }
     }
 
     const openSetupDialog = () => {
@@ -261,19 +332,52 @@ export default {
     }
 
     const openNewRequestDialog = () => {
+      if (!hasCompletedSetup.value) {
+        $q.notify({
+          type: 'warning',
+          message: 'Please complete your profile setup first',
+        })
+        showSetupDialog.value = true
+        return
+      }
       showNewRequestDialog.value = true
     }
 
     const openCreateTemplateDialog = () => {
+      if (!hasCompletedSetup.value) {
+        $q.notify({
+          type: 'warning',
+          message: 'Please complete your profile setup first',
+        })
+        showSetupDialog.value = true
+        return
+      }
       showCreateTemplateDialog.value = true
     }
 
     const editTemplate = (template) => {
+      if (!hasCompletedSetup.value) {
+        $q.notify({
+          type: 'warning',
+          message: 'Please complete your profile setup first',
+        })
+        showSetupDialog.value = true
+        return
+      }
       // TODO: Implement template editing
       console.log('Edit template:', template)
     }
 
     const deleteTemplate = async (template) => {
+      if (!hasCompletedSetup.value) {
+        $q.notify({
+          type: 'warning',
+          message: 'Please complete your profile setup first',
+        })
+        showSetupDialog.value = true
+        return
+      }
+
       try {
         await $q.dialog({
           title: 'Confirm Deletion',
@@ -295,17 +399,33 @@ export default {
     }
 
     onMounted(async () => {
-      userStore.fetchUser()
-      const unwatch = watch(
-        () => userStore.userObject,
-        async (newUser) => {
-          if (newUser) {
-            await userStore.fetchUserFromDb()
-            unwatch()
-          }
-        },
-        { immediate: true },
-      )
+      try {
+        isLoading.value = true
+        userStore.fetchUser()
+        const unwatch = watch(
+          () => userStore.userObject,
+          async (newUser) => {
+            if (newUser) {
+              await userStore.fetchUserFromDb()
+              if (!hasCompletedSetup.value) {
+                showSetupDialog.value = true
+              } else {
+                await fetchTemplates()
+              }
+              unwatch()
+            }
+          },
+          { immediate: true },
+        )
+      } catch (err) {
+        console.error('Failed to load user data:', err)
+        $q.notify({
+          type: 'negative',
+          message: 'Failed to load user data. Please try again.',
+        })
+      } finally {
+        isLoading.value = false
+      }
     })
 
     return {
@@ -329,6 +449,9 @@ export default {
       templateColumns,
       editTemplate,
       deleteTemplate,
+      isLoading,
+      hasCompletedSetup,
+      handleTemplateSaved,
     }
   },
 }

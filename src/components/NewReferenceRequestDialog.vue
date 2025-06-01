@@ -5,7 +5,6 @@
         <q-card-section align="right">
           <q-icon flat name="close" class="close-btn" @click="closeDialog" />
         </q-card-section>
-
         <q-card-section>
           <div class="text-h6">New Reference Request</div>
           <div class="q-mt-md">
@@ -35,16 +34,7 @@
               class="q-mb-md"
               :rules="[(val) => !!val || 'Please select a template']"
             />
-            <q-input
-              v-model="message"
-              type="textarea"
-              label="Personal Message"
-              outlined
-              dense
-              class="q-mb-lg"
-            />
 
-            <!-- Preview Section -->
             <q-expansion-item
               group="preview"
               icon="visibility"
@@ -78,7 +68,7 @@
 </template>
 
 <script>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useAuthStore } from 'src/stores/auth'
 import axios from 'axios'
@@ -89,6 +79,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    templates: {
+      type: Array,
+      required: false,
+    },
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
@@ -97,29 +91,9 @@ export default {
     const recipientName = ref('')
     const recipientEmail = ref('')
     const selectedTemplate = ref(null)
-    const message = ref('')
 
     const dialogModel = ref(props.modelValue)
 
-    // Mock templates data - this should come from your templates API
-    const templates = ref([
-      {
-        id: 1,
-        name: 'Job Application',
-        emailSubject: 'Reference Request from {yourName}',
-        emailBody:
-          'Dear {recipientName},\n\nI hope this email finds you well. I am reaching out to request a professional reference for an upcoming job application.\n\n{customMessage}\n\nThank you for your time and consideration.\n\nBest regards,\n{yourName}',
-      },
-      {
-        id: 2,
-        name: 'Academic Reference',
-        emailSubject: 'Academic Reference Request - {yourName}',
-        emailBody:
-          'Dear {recipientName},\n\nI am writing to request an academic reference for my graduate school application.\n\n{customMessage}\n\nThank you for your support.\n\nBest regards,\n{yourName}',
-      },
-    ])
-
-    // Computed properties for preview
     const previewEmailSubject = computed(() => {
       if (!selectedTemplate.value) return ''
 
@@ -128,7 +102,6 @@ export default {
         yourName:
           `${userStore.userDbObject?.firstName || ''} ${userStore.userDbObject?.lastName || ''}`.trim() ||
           '[Your Name]',
-        customMessage: message.value,
       }
 
       return replaceVariables(selectedTemplate.value.emailSubject, variables)
@@ -142,7 +115,6 @@ export default {
         yourName:
           `${userStore.userDbObject?.firstName || ''} ${userStore.userDbObject?.lastName || ''}`.trim() ||
           '[Your Name]',
-        customMessage: message.value,
       }
 
       return replaceVariables(selectedTemplate.value.emailBody, variables)
@@ -158,12 +130,10 @@ export default {
       )
     })
 
-    // Helper function to replace variables in templates
     const replaceVariables = (template, values) => {
       return template.replace(/{(\w+)}/g, (match, key) => values[key] || match)
     }
 
-    // Watch for changes in props.modelValue
     watch(
       () => props.modelValue,
       (newVal) => {
@@ -171,7 +141,6 @@ export default {
       },
     )
 
-    // Watch for changes in dialogModel
     watch(
       () => dialogModel.value,
       (newVal) => {
@@ -194,12 +163,10 @@ export default {
       }
 
       try {
-        // TODO: Replace with your actual API endpoint
         await axios.post('https://vouchforme.org/api/reference-requests', {
           recipientName: recipientName.value,
           recipientEmail: recipientEmail.value,
           templateId: selectedTemplate.value.id,
-          message: message.value,
           userId: userStore.userObject.uid,
           emailSubject: previewEmailSubject.value,
           emailBody: previewEmailBody.value,
@@ -223,15 +190,14 @@ export default {
       recipientName.value = ''
       recipientEmail.value = ''
       selectedTemplate.value = null
-      message.value = ''
     }
+
+    onMounted(async () => {})
 
     return {
       recipientName,
       recipientEmail,
       selectedTemplate,
-      templates,
-      message,
       dialogModel,
       closeDialog,
       sendRequest,

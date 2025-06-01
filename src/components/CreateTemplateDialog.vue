@@ -228,7 +228,7 @@ export default {
       required: true,
     },
   },
-  emits: ['update:modelValue'],
+  emits: ['update:modelValue', 'template-saved'],
   setup(props, { emit }) {
     const $q = useQuasar()
     const userStore = useAuthStore()
@@ -287,7 +287,7 @@ export default {
 
     const saveTemplate = async () => {
       try {
-        await axios.post('https://vouchforme.org/api/templates', {
+        await axios.post('https://vouchforme.org/api/templates/create-template', {
           ...templateData.value,
           userId: userStore.userObject.uid,
         })
@@ -297,6 +297,7 @@ export default {
           message: 'Template saved successfully!',
         })
 
+        emit('template-saved')
         closeDialog()
       } catch (error) {
         console.error('Error saving template:', error)

@@ -9,7 +9,7 @@
         <q-card-section class="dialog-section" align="center">
           <h2 class="text-h4 text-weight-medium q-mb-sm primary-color">Get Started</h2>
           <h6 class="text-subtitle1 text-grey-7 q-ma-none">
-            Create your account to start chatting with recruiters.
+            Create your account to start collecting your references!
           </h6>
         </q-card-section>
 

@@ -212,16 +212,14 @@ export default {
     }
 
     onMounted(async () => {
-      // First ensure we have the auth user
       authStore.fetchUser()
 
-      // Watch for auth user to be set before fetching DB data
       const unwatch = watch(
         () => authStore.userObject,
         async (newUser) => {
           if (newUser) {
             await authStore.fetchUserFromDb()
-            unwatch() // Stop watching once we have the data
+            unwatch()
           }
         },
         { immediate: true },
